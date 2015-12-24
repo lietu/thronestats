@@ -1,0 +1,248 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="lib/jquery/dist/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="lib/semantic/dist/semantic.min.css">
+    <script src="lib/semantic/dist/semantic.min.js"></script>
+
+    <script src="lib/rivets/dist/rivets.bundled.min.js"></script>
+
+    <link rel="stylesheet" href="css/main.css">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <script>window.html5 || document.write('<script src="js/vendor/html5shiv.js"><\/script>')</script>
+    <![endif]-->
+</head>
+<body>
+<section id="popups"></section>
+<section id="configuration">
+    <div class="ui top attached tabular menu">
+        <div rv-on-click="ui.showInformation" id="information-tab"
+             class="active item">Information
+        </div>
+        <div rv-on-click="ui.showGetOverlay" id="get-overlay-tab" class="item">
+            Get overlay
+        </div>
+    </div>
+    <div id="information" class="ui bottom attached active tab segment">
+        <h1 class="ui header">ThroneStats</h1>
+
+        <p>ThroneStats is a service to gather and display statistics on runs in
+            <a href="http://nuclearthrone.com/">Nuclear Throne</a> by <a
+                    href="http://vlambeer.com/">Vlambeer</a>.</p>
+
+        <p>ThroneStats is not trying to be another <em>"ThroneButt"</em>, but
+            provides various statistics on your current run, primarily for
+            streamers, in the form of an overlay you can use with OBS or
+            Xsplit.</p>
+
+        <h2 class="ui header">Stats gathered and shown</h2>
+        <ul>
+            <li>Weapon pickup rate (Most popular: <span
+                    rv-text="globalStats.mostPopularWeapon"></span>)
+            </li>
+            <li>Causes of death (Most common: <span
+                    rv-text="globalStats.mostCommonCauseOfDeath"></span>)
+            </li>
+            <li>Mutation choices (Most popular: <span
+                    rv-text="globalStats.mostPopularMutation"></span>)
+            </li>
+            <li>Crowns (Most popular: <span
+                    rv-text="globalStats.mostPopularCrown"></span>)
+            </li>
+            <li>Character use (Most popular: <span
+                    rv-text="globalStats.mostPopularCharacter"></span>)
+            </li>
+            <li>Levels players die on (Most common: <span
+                    rv-text="globalStats.mostCommonDeathLevel"></span>)
+            </li>
+        </ul>
+
+        <h2 class="ui header">How does it look like?</h2>
+
+        <p>The Twitch logo is a bit annoyingly in the way on the embedded player. You can try fullscreen if you can't see properly otherwise.</p>
+
+        <img id="video-preview" rv-on-click="ui.playVideo"
+             src="img/video_preview.png">
+
+        <div id="video" class="hidden">
+            <object bgcolor='#000000'
+                    data='http://www.twitch.tv/swflibs/TwitchPlayer.swf'
+                    height='378' id='clip_embed_player_flash'
+                    type='application/x-shockwave-flash' width='620'>
+                <param name='movie'
+                       value='http://www.twitch.tv/swflibs/TwitchPlayer.swf'>
+                <param name='allowScriptAccess' value='always'>
+                <param name='allowNetworking' value='all'>
+                <param name='allowFullScreen' value='true'>
+                <param name='flashvars'
+                       value='title=Testing%2BThroneStats&amp;channel=lietu&amp;autoplay=false&amp;start_volume=25&amp;videoId=v31615767'>
+            </object>
+        </div>
+
+        <h2 class="ui header">How do I get it</h2>
+
+        <p>Click on the <em>"Get overlay"</em> -tab at the top of the page for full setup instructions.</p>
+
+        <h2 class="ui header">What if I'm not a streamer?</h2>
+
+        <p>While this was done primarily for streamers, you might still get something out if it even if you don't stream.</p>
+        <p>Open a new browser window, go to the <em>"Get Overlay"</em> -tab above and use the <em>"Test overlay"</em> -feature to view the statistical information.</p>
+        <p>However you'll have to keep this on another screen, or beside the Nuclear Throne window if you want to see it.</p>
+
+        <h2 class="ui header">Who made this?</h2>
+
+        <p><a href="https://twitch.tv/lietu">Lietu</a> made this.</p>
+
+        <h2 class="ui header">Can I contribute somehow?</h2>
+
+        <p>Maybe. The source code is publicly available at <a href="https://github.com/lietu/thronestats">https://github.com/lietu/thronestats</a>. If you want to contribute code, graphics, or just have feature requests, go there.</p>
+
+        <h2 class="ui header">Legal stuff</h2>
+
+        <p>Nuclear Throne is (probably) a trademark of Vlambeer. ThroneStats is not affiliated with Vlambeer and vice-versa. Neither is the creator of ThroneStats.</p>
+        <p>ThroneStats -service saves your run information to keep global stats. It shouldn't contain any private information, but if you're cautious you can always just get the source code and run it locally for yourself. Up to you.</p>
+
+        <p>Copyright &copy; 2015-infinity Janne "Lietu" Enberg.</p>
+    </div>
+    <div id="get-overlay" class="ui bottom attached tab segment">
+        <h2 class="ui header">Get overlay</h2>
+
+        <p>You only need to fill in your SteamID64 and Stream Key to get a
+            custom link that you can show in your OBS/Xsplit to get your
+            notifications running.</p>
+
+        <div class="ui form">
+            <div class="two fields">
+                <div class="field">
+                    <label>Steam ID 64 (<a href="https://steamid.io/"
+                                           target="_blank">Search</a>)</label>
+                    <input type="text" rv-value="settings.steamId64"
+                           placeholder="Steam ID 64">
+                </div>
+                <div class="field">
+                    <label>Stream Key (Settings -> Game)</label>
+                    <input type="text" rv-value="settings.streamKey"
+                           placeholder="Stream Key">
+                </div>
+            </div>
+            <div class="two fields">
+                <button rv-on-click="ui.getOverlayLink"
+                        class="ui primary button">
+                    Get overlay link
+                </button>
+                <button rv-on-click="ui.viewOverlay" class="ui button">
+                    Test overlay
+                </button>
+            </div>
+        </div>
+
+        <div id="overlay-link" class="ui hidden form">
+            <div class="one field">
+                <div class="field">
+                    <label>Your overlay URL</label>
+                    <input type="text" rv-value="ui.overlayUrl">
+                </div>
+            </div>
+            <div class="one field">
+                <button rv-on-click="ui.copyLink" class="ui primary button">Copy link to clipboard</button>
+            </div>
+        </div>
+
+        <hr>
+
+        <h3>OBS Setup</h3>
+
+        <p>For OBS you'll likely want to use <a
+                href="https://obsproject.com/forum/resources/clr-browser-source-plugin.22/">CLR
+            Browser</a> and the guide is written with it in mind.</p>
+        <ol>
+            <li>
+                Fill in the information above and click on <em>"Get overlay
+                link"</em> to get the URL for your overlay.
+            </li>
+            <li>
+                In OBS add a new CLR Browser source to your scene (or as a
+                Global Source).<br>
+                <img src="img/obs_add_clr.jpg">
+            </li>
+            <li>In the "URL" -field add your overlay URL.
+            </li>
+            <li>Set your preferred dimensions for the overlay. Try out width
+                300 and set height to your stream height (e.g. 720).
+            </li>
+        </ol>
+
+        <hr>
+
+        <h3>Xsplit Setup</h3>
+
+        <p>This is unfortunately based on hearsay but you should be able to add
+            a "webpage URL source" to your scene, which should function
+            similarly to CLR Browser in OBS. If you can provide full set of
+            instructions, please contact me.</p>
+    </div>
+    <div id="steamId64Help" class="ui modal">
+        <i class="close icon"></i>
+
+        <div class="header">
+            Locating your SteamId64
+        </div>
+        <div class="content">
+            <p>Easiest way to get your SteamID64 is to go to <a target="_blank" href="https://steamid.io/lookup">https://steamid.io/lookup</a> and click on <em>"Sign in through Steam"</em>, and then authenticate yourself with your Steam user account. After that click on your profile image and choose <em>"profile"</em> and look for the the <em>"steamID64"</em> -line.</p>
+        </div>
+        <div class="image content">
+            <div class="image">
+                <img src="img/steamid.jpg">
+            </div>
+        </div>
+        <div class="actions">
+            <div class="ui button">Cancel</div>
+            <div class="ui button">OK</div>
+        </div>
+    </div>
+    <div id="streamKeyHelp" class="ui modal">
+        <i class="close icon"></i>
+
+        <div class="header">
+            Locating your Stream Key
+        </div>
+        <div class="content">
+            <p>Locating your stream key from Nuclear Throne is easy. Just go to Settings -> Game, and click on <em>"Stream Key"</em> if it says <em>"Disabled"</em> to generate one.</p>
+        </div>
+        <div class="image content">
+            <div class="image">
+                <img src="img/nt_stream_key.jpg">
+            </div>
+        </div>
+        <div class="actions">
+            <div class="ui button">Cancel</div>
+            <div class="ui button">OK</div>
+        </div>
+    </div>
+</section>
+<section id="overlay">
+</section>
+<script type="text/html" id="message-template">
+    <div class="ui icon message">
+        <i class="inbox icon"></i>
+
+        <div class="content">
+            <div class="header">
+                { header }
+            </div>
+            <p>{ content }</p>
+        </div>
+    </div>
+</script>
+<script src="js/main.js"></script>
+</body>
+</html>

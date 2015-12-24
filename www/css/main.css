@@ -1,0 +1,35 @@
+/* ThroneStats main styles */
+body.background {
+  background-image: url("../img/tweed.png"); }
+
+img {
+  max-width: 100%; }
+
+section {
+  display: none; }
+
+.hidden {
+  display: none; }
+
+#popups {
+  position: absolute;
+  display: block;
+  width: 100%;
+  z-index: 9999; }
+
+.ui.tabular.menu .item:not(.active) {
+  background: #cecece;
+  color: rgba(0, 0, 0, 0.95);
+  border-top-width: 1px;
+  border-color: #8b8b8c;
+  font-weight: 700;
+  margin-bottom: -1px;
+  box-shadow: none;
+  border-radius: 0.28571rem 0.28571rem 0 0 !important; }
+
+#configuration {
+  padding: 6rem 3rem 3rem 3rem; }
+  #configuration .form {
+    margin-top: 24px; }
+  #configuration .form:last-of-type {
+    margin-bottom: 50px; }

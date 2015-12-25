@@ -121,9 +121,6 @@ func (sc *StatsContainer) Save() {
 }
 
 func (rs *StatsContainer) EndRun() {
-	rs.Runs += 1
-	GlobalStats.Runs += 1
-
 	rs.RunStats.UpdateStatsContainer(rs)
 	rs.RunStats.UpdateStatsContainer(GlobalStats)
 	rs.RunStats.Reset()

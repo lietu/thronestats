@@ -4,11 +4,15 @@ import (
 	"strconv"
 )
 
+var DEFAULT_CHARACTER = -1
+var DEFAULT_CROWN = -1
+var DEFAULT_ENEMY = -1
+
 type RunStats struct {
 	character    int
 	causeOfDeath int
-	diedOnLevel  string
 	lastCrown    int
+	diedOnLevel  string
 	weapons      []int
 	mutations    []int
 	crowns       []int
@@ -45,6 +49,10 @@ func (rs *RunStats) MutationChoice(mutation int) bool {
 }
 
 func (rs *RunStats) CrownChoice(crown int) bool {
+	if crown == DEFAULT_CROWN {
+		return false
+	}
+
 	if is_in(rs.crowns, crown) {
 		if crown != rs.lastCrown {
 			rs.lastCrown = crown
@@ -75,6 +83,12 @@ func (rs *RunStats) NewRun(character int) {
 }
 
 func (rs *RunStats) UpdateStatsContainer(sc *StatsContainer) {
+	if rs.character == DEFAULT_CHARACTER {
+		return
+	}
+
+	sc.Runs += 1
+
 	_, ok := sc.DeathsByLevel[rs.diedOnLevel]
 
 	if !ok {
@@ -82,7 +96,11 @@ func (rs *RunStats) UpdateStatsContainer(sc *StatsContainer) {
 	}
 
 	sc.DeathsByLevel[rs.diedOnLevel] += 1
-	sc.CausesOfDeath[strconv.Itoa(rs.causeOfDeath)] += 1
+
+	if rs.causeOfDeath != DEFAULT_ENEMY {
+		sc.CausesOfDeath[strconv.Itoa(rs.causeOfDeath)] += 1
+	}
+
 	sc.Characters[strconv.Itoa(rs.character)] += 1
 
 	for _, mutation := range rs.mutations {
@@ -94,7 +112,9 @@ func (rs *RunStats) UpdateStatsContainer(sc *StatsContainer) {
 	}
 
 	for _, crown := range rs.crowns {
-		sc.CrownChoices[strconv.Itoa(crown)] += 1
+		if crown != DEFAULT_CROWN {
+			sc.CrownChoices[strconv.Itoa(crown)] += 1
+		}
 	}
 
 	// Calculate stats
@@ -102,7 +122,7 @@ func (rs *RunStats) UpdateStatsContainer(sc *StatsContainer) {
 	causeOfDeath := sc.getMostPopular(sc.CausesOfDeath, "")
 	mutation := sc.getMostPopular(sc.MutationChoices, "")
 	crown := sc.getMostPopular(sc.CrownChoices, "1")
-	character := sc.getMostPopular(sc.Characters, "")
+	character := sc.getMostPopular(sc.Characters, "-1")
 	level := sc.getMostPopular(sc.DeathsByLevel, "")
 
 	sc.MostPopularWeapon = Weapons[ToInt(weapon)]
@@ -125,10 +145,10 @@ func (rs *RunStats) Reset() {
 
 func NewRunStats() *RunStats {
 	rs := RunStats{
-		-1,
-		-1,
+		DEFAULT_CHARACTER,
+		DEFAULT_ENEMY,
+		DEFAULT_CROWN,
 		"",
-		1,
 		[]int{},
 		[]int{},
 		[]int{},

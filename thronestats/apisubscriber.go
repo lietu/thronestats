@@ -101,6 +101,10 @@ func (as *ApiSubscriber) onNewRun(rd *RunData) {
 	log.Printf("Player %s started a new run with %s", as.SteamId64, character)
 }
 
+func (as *ApiSubscriber) onNewLevel(rd *RunData) {
+	log.Printf("Player %s entered level %s", as.SteamId64, rd.Level)
+}
+
 func (as *ApiSubscriber) processUpdate(rd *RunData) {
 	if as.statsContainer.Running {
 		for _, v := range rd.Weapons {
@@ -117,6 +121,12 @@ func (as *ApiSubscriber) processUpdate(rd *RunData) {
 
 		if as.statsContainer.RunStats.CrownChoice(rd.Crown) {
 			as.onNewCrown(rd.Crown)
+		}
+
+
+		// Reached new level
+		if as.runData.Level != rd.Level {
+			as.onNewLevel(rd)
 		}
 
 		// Has the player died?

@@ -24,6 +24,43 @@ $(function () {
     }
 
     /**
+     * Rate limit a function call, but execute all calls
+     *
+     * @param {Function} fn Function to wrap
+     * @param {Number} wait Milliseconds between executions
+     * @returns {Function} Rate-limited wrapper to fn
+     */
+    function throttle(fn, wait) {
+        var _queue = [];
+        var _running = false;
+
+        function _call(scope, args) {
+            _running = true;
+            fn.apply(scope, args);
+
+            setTimeout(function () {
+                if (_queue.length) {
+                    var next = _queue.shift();
+                    _call(next.scope, next.args);
+                } else {
+                    _running = false;
+                }
+            }, wait);
+        }
+
+        return function () {
+            var args = Array.prototype.slice.call(arguments);
+            var _this = this;
+
+            if (_running) {
+                _queue.push({scope: _this, args: args});
+            } else {
+                _call(_this, args);
+            }
+        };
+    }
+
+    /**
      * http://stackoverflow.com/a/30810322
      * @param text
      */
@@ -146,10 +183,10 @@ $(function () {
                 steamId64: null,
                 streamKey: null,
                 popupLifetime: 15000,
-                dataEndpoint: "data",
+                dataEndpoint: "data"
             };
 
-            this.susbscribed = false;
+            this.subscribed = false;
             this.settings = null;
             this.configurationView = null;
             this.websocket = null;
@@ -225,9 +262,9 @@ $(function () {
             $("#information, #information-tab").removeClass("active");
         },
 
-        popup: function (header, content, lifetime) {
+        popup: throttle(function (header, content, lifetime) {
             Popup.create(this, header, content, lifetime);
-        },
+        }, 1500),
 
         getLink: function (settings) {
             var args = [

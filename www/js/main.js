@@ -139,11 +139,9 @@ $(function () {
                 content: content
             });
 
-            this.$element.css("opacity", 0);
-
+            this.$element.css("display", "none");
             this.$element.prependTo("#popups");
-
-            this.$element.animate({opacity: 1});
+            this.$element.slideDown();
 
             if (!lifetime) {
                 if (this.throneStats.settings.popupLifetime) {

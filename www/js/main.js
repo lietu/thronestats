@@ -174,159 +174,45 @@ $(function () {
 
         initialize: function () {
             this.$popupTemplate = $($('#message-template').html());
-            this.$configuration = $("#configuration");
+            this.$content = $("#content");
             this.$overlay = $("#overlay");
 
             this.defaultSettings = {
                 steamId64: null,
                 streamKey: null,
                 popupLifetime: 15000,
-                dataEndpoint: "data"
+                dataEndpoint: "data",
+                view: "information"
             };
 
+            this.view = null;
             this.subscribed = false;
             this.settings = null;
-            this.configurationView = null;
+            this.contentView = null;
             this.websocket = null;
         },
 
-        parseSettings: function () {
-            var settings = JSON.parse(JSON.stringify(this.defaultSettings));
-
-            var args = String(window.location.hash).substr(1).split("&");
-
-            for (var i = 0, count = args.length; i < count; ++i) {
-                var arg = args[i];
-                var equals = arg.indexOf("=");
-                var key = arg.substr(0, equals);
-                settings[key] = arg.substr(equals + 1);
-            }
-
-            return settings;
-        },
-
-        streamKeyOk: function (streamKey) {
-            return /^[a-zA-Z0-9]{6}$/.test(streamKey);
-        },
-
-        steamId64Ok: function (steamId64) {
-            return /^[0-9]{17}$/.test(steamId64);
-        },
-
-        checkSettingsOk: function (settings, showHelp) {
-
-            if (!this.streamKeyOk(settings.streamKey)) {
-                log("Stream key looks invalid");
-                if (showHelp) {
-                    $("#streamKeyHelp").modal("show");
-                }
-            } else if (!this.steamId64Ok(settings.steamId64)) {
-                log("Steam ID 64 looks invalid");
-                if (showHelp) {
-                    $("#steamId64Help").modal("show");
-                }
-            } else {
-                log("Settings ok");
-                return true;
-            }
-
-            log("Settings NOT ok");
-            return false;
-        },
-
-        showConfiguration: function () {
-            log("Showing configuration");
-            $("body").addClass("background");
-            this.$overlay.hide();
-            this.$configuration.show();
-        },
-
-        showOverlay: function () {
-            log("Showing overlay");
-            $("body").removeClass("background");
-            this.$configuration.hide();
-            this.$overlay.show();
-
-            this.subscribe();
-        },
-
-        showInformation: function () {
-            $("#get-overlay, #get-overlay-tab").removeClass("active");
-            $("#information, #information-tab").addClass("active");
-        },
-
-        showGetOverlay: function () {
-            $("#get-overlay, #get-overlay-tab").addClass("active");
-            $("#information, #information-tab").removeClass("active");
-        },
-
-        popup: throttle(function (header, content, lifetime) {
-            Popup.create(this, header, content, lifetime);
-        }, 1500),
-
-        getLink: function (settings) {
-            var args = [
-                "steamId64=" + settings.steamId64,
-                "streamKey=" + settings.streamKey
-            ];
-
-            var link = window.location + "#" + args.join("&");
-
-            log("Link: " + link);
-
-            return link;
-        },
-
-        getOverlayLink: function () {
-            log("Get overlay link");
-            if (!this.checkSettingsOk(this.settings, true)) {
-                return;
-            }
-
-            this.configurationView.models.ui.overlayUrl = this.getLink(this.settings);
-            $("#overlay-link").removeClass("hidden");
-        },
-
-
-        copyLink: function () {
-            copyTextToClipboard(this.getLink(this.settings));
-            this.popup("Link copied", "Overlay link copied to clipboard. CTRL+V to paste.", 2500);
-        },
-
-        viewOverlay: function () {
-            log("View overlay");
-
-            if (!this.checkSettingsOk(this.settings, true)) {
-                return;
-            }
-
-            window.history.pushState({}, "ThroneStats Overlay", this.getLink(this.settings));
-            this.showOverlay();
-        },
-
-        playVideo: function () {
-            log("Play video");
-            $("#video-preview").hide();
-            $("#video").removeClass("hidden");
-        },
-
+        /**
+         * Start the webapp
+         */
         start: function () {
             log("Starting up...");
 
+            // Setup Semantic UI modals
             $(".ui.modal").modal();
 
-            this.settings = this.parseSettings();
+            this.updateSettings(this.parseSettings());
 
             log("Got settings: ", this.settings);
 
-            this.configurationView = rivets.bind(this.$configuration, {
+            this.contentView = rivets.bind(this.$content, {
                 settings: this.settings,
                 ui: {
-                    getOverlayLink: this.getOverlayLink.bind(this),
+                    getOverlayLink: this.showOverlayLink.bind(this),
                     viewOverlay: this.viewOverlay.bind(this),
-                    showInformation: this.showInformation.bind(this),
-                    showGetOverlay: this.showGetOverlay.bind(this),
-                    copyLink: this.copyLink.bind(this),
+                    showInformation: function() { this.showView("information"); }.bind(this),
+                    showGetOverlay: function() { this.showView("get-overlay"); }.bind(this),
+                    copyLinkToClipboard: this.copyLinkToClipboard.bind(this),
                     playVideo: this.playVideo.bind(this),
                     steamId64HelpVisible: false,
                     streamKeyHelpVisible: false
@@ -343,23 +229,205 @@ $(function () {
 
             this.connect();
 
-            if (this.checkSettingsOk(this.settings)) {
-                this.showOverlay();
+            this.showView();
+            window.addEventListener("hashchange", this._onHashChange.bind(this), false);
+        },
+
+        /**
+         * Update data from new settings
+         *
+         * @param settings
+         */
+        updateSettings: function(settings) {
+            this.settings = settings;
+
+            if (this.view === null && !settings.view) {
+                this.view = this.defaultSettings.view;
             } else {
-                this.showConfiguration();
+                this.view = settings.view;
             }
         },
 
-        updateGlobalStats: function (data) {
-            for (var key in data) {
-                if (data.hasOwnProperty(key)) {
-                    this.configurationView.models.globalStats[key] = data[key];
+        /**
+         * Parse settings from URL hash
+         *
+         * @param {String} hash
+         */
+        parseSettings: function (hash) {
+            hash = hash || window.location.hash;
+
+            var settings = JSON.parse(JSON.stringify(this.defaultSettings));
+
+            var args = String(hash).substr(1).split("&");
+
+            for (var i = 0, count = args.length; i < count; ++i) {
+                var arg = args[i];
+                var equals = arg.indexOf("=");
+                var key = arg.substr(0, equals);
+                settings[key] = arg.substr(equals + 1);
+            }
+
+            return settings;
+        },
+
+        /**
+         * Check if overlay settings are good to go, optionally displays help.
+         *
+         * @param settings
+         * @param showHelp
+         * @returns {boolean}
+         */
+        checkOverlaySettings: function (settings, showHelp) {
+
+            if (!this.streamKeyOk(settings.streamKey)) {
+                log("Stream key " + settings.streamKey + " looks invalid");
+                if (showHelp) {
+                    $("#streamKeyHelp").modal("show");
+                }
+            } else if (!this.steamId64Ok(settings.steamId64)) {
+                log("Steam ID 64 " + settings.steamId64 + " looks invalid");
+                if (showHelp) {
+                    $("#steamId64Help").modal("show");
+                }
+            } else {
+                log("Settings ok");
+                return true;
+            }
+
+            log("Settings NOT ok");
+            return false;
+        },
+
+        /**
+         * Display a view
+         *
+         * @param {String} view "overlay" or one of the content area tab names
+         */
+        showView: function(view) {
+            if (view) {
+                this.view = view;
+            }
+
+            log("Was asked to show view " + this.view);
+
+            if (this.view === "overlay") {
+                if (this.checkOverlaySettings(this.settings, true)) {
+                    this.showOverlay();
+                    return;
+                } else {
+                    log("Invalid settings prevent showing overlay, showing get-overlay instead");
+                    this.view = "get-overlay";
                 }
             }
 
-            log(data);
+            this._showContentView(this.view);
         },
 
+        /**
+         * Show the stats overlay
+         */
+        showOverlay: function () {
+            log("Showing overlay");
+
+            $("body").removeClass("background");
+
+            this.$content.hide();
+            this.$overlay.show();
+
+            this.subscribe();
+        },
+
+        /**
+         * Show a popup message
+         *
+         * @param {String} header Title text
+         * @param {String} content Content body
+         * @param {Number} lifetime Time in milliseconds to display popup
+         */
+        popup: throttle(function (header, content, lifetime) {
+            Popup.create(this, header, content, lifetime);
+        }, 1500),
+
+        /**
+         * Get URL to overlay regardless of current settings
+         *
+         * @param settings
+         * @returns {string}
+         */
+        getOverlayLink: function (settings) {
+            var args = [
+                "view=overlay",
+                "steamId64=" + settings.steamId64,
+                "streamKey=" + settings.streamKey
+            ];
+
+            var location = String(window.location);
+            var pos = location.indexOf("#");
+            if (pos !== -1) {
+                location = location.substr(0, pos);
+            }
+
+            var link = location + "#" + args.join("&");
+
+            log("Link: " + link);
+
+            return link;
+        },
+
+        /**
+         * Get overlay link -button.
+         *
+         * Display the overlay link in the UI for user to copy.
+         */
+        showOverlayLink: function () {
+            log("Show overlay link");
+
+            if (!this.checkOverlaySettings(this.settings, true)) {
+                return;
+            }
+
+            this.contentView.models.ui.overlayUrl = this.getOverlayLink(this.settings);
+            $("#overlay-link").removeClass("hidden");
+        },
+
+        /**
+         * View the overlay -button.
+         *
+         * Checks the settings and if they're OK navigates to the overlay view.
+         */
+        viewOverlay: function () {
+            log("View overlay");
+
+            if (!this.checkOverlaySettings(this.settings, true)) {
+                return;
+            }
+
+            window.history.pushState({}, "ThroneStats Overlay", this.getOverlayLink(this.settings));
+            this.showView("overlay");
+        },
+
+        /**
+         * Copy link to clipboard
+         */
+        copyLinkToClipboard: function () {
+            copyTextToClipboard(this.getOverlayLink(this.settings));
+            this.popup("Link copied", "Overlay link copied to clipboard. CTRL+V to paste.", 2500);
+        },
+
+        /**
+         * Play the video (click on screenshot)
+         */
+        playVideo: function () {
+            log("Play video");
+            $("#video-preview").hide();
+            $("#video").removeClass("hidden");
+        },
+
+        /**
+         * Connect to backend
+         *
+         * @param callback
+         */
         connect: function (callback) {
             var proto = (location.protocol === "https:" ? "wss://" : "ws://");
             var server = proto + window.location.hostname + ":" + window.location.port + "/" + this.settings.dataEndpoint;
@@ -379,9 +447,12 @@ $(function () {
             }.bind(this);
         },
 
+        /**
+         * Subscribe to receive live stats events from backend
+         */
         subscribe: function () {
 
-            if (!this.checkSettingsOk(this.settings)) {
+            if (!this.checkOverlaySettings(this.settings)) {
                 log("Not subscribing, settings are not OK");
                 return;
             }
@@ -394,32 +465,155 @@ $(function () {
                     steamId64: this.settings.steamId64,
                     streamKey: this.settings.streamKey
                 }));
-                this.susbscribed = true;
+                this.subscribed = true;
             } else {
                 setTimeout(this.subscribe.bind(this), 250);
             }
         },
 
+        /**
+         * Check if stream key looks good
+         *
+         * @param streamKey
+         * @returns {boolean}
+         */
+        streamKeyOk: function (streamKey) {
+            return /^[a-zA-Z0-9]{6}$/.test(streamKey);
+        },
+
+        /**
+         * Check if Steam ID 64 looks good
+         *
+         * @param steamId64
+         * @returns {boolean}
+         */
+        steamId64Ok: function (steamId64) {
+            return /^[0-9]{17}$/.test(steamId64);
+        },
+
+
+
+        /*
+         * Private methods, shouldn't be called unless you know what you're doing
+         */
+
+
+        /**
+         * Show a content view, should NOT be called outside of showView()
+         *
+         * @param {String} view
+         * @private
+         */
+        _showContentView: function (view) {
+            log("Showing content view " + view);
+
+            $("body").addClass("background");
+
+            this.$overlay.hide();
+            this.$content.show();
+
+            this._switchTab(view);
+        },
+
+
+        /**
+         * Switch active tab in content view
+         * @param {String} view
+         */
+        _switchTab: function (view) {
+            if (view != this.activeView) {
+                $("#get-overlay, #get-overlay-tab").removeClass("active");
+                $("#information, #information-tab").removeClass("active");
+
+                var selector = "#" + view + ", #" + view + "-tab";
+                $(selector).addClass("active");
+
+                this.activeView = view;
+            }
+        },
+
+        /**
+         * Process a global stats update
+         *
+         * @param data
+         */
+        _updateGlobalStats: function (data) {
+            for (var key in data) {
+                if (data.hasOwnProperty(key)) {
+                    this.contentView.models.globalStats[key] = data[key];
+                }
+            }
+        },
+
+        /*
+         * Event handlers, should never be called manually
+         */
+
+
+        /**
+         * Triggered when location hash changes
+         *
+         * @param event
+         * @private
+         */
+        _onHashChange: function(event) {
+            var newURL = event.newURL;
+
+            log("Hash change detected, new URL: " + newURL);
+
+            var pos = newURL.indexOf("#");
+            if (pos !== -1) {
+                var hash = newURL.substr(pos);
+                this.updateSettings(this.parseSettings());
+                this.showView();
+            }
+        },
+
+        /**
+         * Triggered when connection to backend is established
+         *
+         * @param event
+         * @private
+         */
         _onOpen: function (event) {
             log("Connected to server");
         },
 
+        /**
+         * Triggered when backend sends messages to us
+         *
+         * @param event
+         * @private
+         */
         _onMessage: function (event) {
-            log("Got message", event.data);
-
             var data = JSON.parse(event.data);
 
             if (data.type === "message") {
+                log("Got message", data);
                 this.popup(data.header, data.content);
             } else if (data.type === "globalStats") {
-                this.updateGlobalStats(JSON.parse(data.content));
+                var content = JSON.parse(data.content);
+                log("Got global stats update", content);
+                this._updateGlobalStats(content);
+            } else {
+                log("Got unsupported message?", data);
             }
         },
 
+        /**
+         * Triggered when there is an error with the backend connection
+         *
+         * @private
+         */
         _onError: function () {
             log("Error", arguments);
         },
 
+        /**
+         * Triggered when connection to backend was closed
+         *
+         * @private
+         */
         _onClose: function () {
             log("Connection closed!");
             if (this.subscribed) {
@@ -427,7 +621,9 @@ $(function () {
             }
             setTimeout(function () {
                 this.connect(function () {
-                    this.subscribe();
+                    if (this.subscribed) {
+                        this.subscribe();
+                    }
                 }.bind(this));
             }.bind(this), 3000);
         }

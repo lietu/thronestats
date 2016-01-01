@@ -27,9 +27,9 @@ section {
   box-shadow: none;
   border-radius: 0.28571rem 0.28571rem 0 0 !important; }
 
-#configuration {
+#content {
   padding: 6rem 3rem 3rem 3rem; }
-  #configuration .form {
+  #content .form {
     margin-top: 24px; }
-  #configuration .form:last-of-type {
+  #content .form:last-of-type {
     margin-bottom: 50px; }

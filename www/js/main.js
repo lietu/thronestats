@@ -1010,12 +1010,12 @@ $(function () {
             this.stats.steamIdText = steamIdText;
 
             var skip = {
-                "characters": ["0", "13", "14", "16"],
-                "causesOfDeath": [],
-                "crownChoices": ["1"],
-                "deathsByLevel": [],
-                "mutationChoices": [],
-                "weaponChoices": ["0"]
+                "characters": ["", "0", "13", "14", "16"],
+                "causesOfDeath": [""],
+                "crownChoices": ["", "1"],
+                "deathsByLevel": [""],
+                "mutationChoices": [""],
+                "weaponChoices": ["", "0"]
             };
 
             for (var key in data) {

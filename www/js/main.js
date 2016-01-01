@@ -185,7 +185,6 @@ $(function () {
                 view: "information"
             };
 
-            this.view = null;
             this.subscribed = false;
             this.settings = null;
             this.contentView = null;
@@ -214,6 +213,7 @@ $(function () {
                     showGetOverlay: function() { this.showView("get-overlay"); }.bind(this),
                     copyLinkToClipboard: this.copyLinkToClipboard.bind(this),
                     playVideo: this.playVideo.bind(this),
+                    goToView: this.goToView.bind(this),
                     steamId64HelpVisible: false,
                     streamKeyHelpVisible: false
                 },
@@ -241,10 +241,8 @@ $(function () {
         updateSettings: function(settings) {
             this.settings = settings;
 
-            if (this.view === null && !settings.view) {
-                this.view = this.defaultSettings.view;
-            } else {
-                this.view = settings.view;
+            if (this.settings.view === null) {
+                this.settings.view = this.defaultSettings.view;
             }
         },
 
@@ -268,6 +266,94 @@ $(function () {
             }
 
             return settings;
+        },
+
+        /**
+         * Merge settings so no existing data is lost
+         *
+         * @param old
+         * @param settings
+         */
+        mergeSettings: function(old, settings) {
+            var newSettings = {};
+            var key;
+
+            for (key in settings) {
+                if (settings.hasOwnProperty(key)) {
+                    newSettings[key] = settings[key];
+                }
+            }
+
+            for (key in old) {
+                if (old.hasOwnProperty(key) && !newSettings[key]) {
+                    newSettings[key] = old[key];
+                }
+            }
+
+            return newSettings;
+        },
+
+        /**
+         * Get current location, hash-free
+         *
+         * @return {string}
+         */
+        getLocation: function() {
+            var location = String(window.location);
+            var pos = location.indexOf("#");
+            if (pos !== -1) {
+                location = location.substr(0, pos);
+            }
+
+            return location;
+        },
+
+        /**
+         * Convert settings object to an URL
+         *
+         * @param settings
+         */
+        settingsToUrl: function(settings) {
+            settings = settings || this.settings;
+            var args = [];
+
+            for (var key in settings) {
+                if (settings.hasOwnProperty(key) && key != "" && key.substr(0, 1) !== "_") {
+                    if (settings[key] !== this.defaultSettings[key]) {
+                        args.push(key + "=" + settings[key]);
+                    }
+                }
+            }
+
+            var url = this.getLocation();
+
+            if (args.length > 0) {
+                 url = url + "#" + args.join("&");
+            }
+
+            log("URL: " + url);
+
+            return url
+        },
+
+        /**
+         * Get URL to overlay regardless of current settings
+         *
+         * @param settings
+         * @returns {string}
+         */
+        getOverlayLink: function (settings) {
+            var args = [
+                "view=overlay",
+                "steamId64=" + settings.steamId64,
+                "streamKey=" + settings.streamKey
+            ];
+
+            var link = this.getLocation() + "#" + args.join("&");
+
+            log("Overlay link: " + link);
+
+            return link;
         },
 
         /**
@@ -305,22 +391,60 @@ $(function () {
          */
         showView: function(view) {
             if (view) {
-                this.view = view;
+                this.settings.view = view;
             }
 
-            log("Was asked to show view " + this.view);
+            log("Was asked to show view " + this.settings.view);
 
-            if (this.view === "overlay") {
+            if (this.settings.view === "overlay") {
                 if (this.checkOverlaySettings(this.settings, true)) {
                     this.showOverlay();
                     return;
                 } else {
                     log("Invalid settings prevent showing overlay, showing get-overlay instead");
-                    this.view = "get-overlay";
+                    this.settings.view = "get-overlay";
                 }
             }
 
-            this._showContentView(this.view);
+            this._showContentView(this.settings.view);
+            var url = this.settingsToUrl();
+
+            if (url !== String(window.location)) {
+                log("Pushing to history: " + url);
+                this.addToHistory(url);
+            }
+        },
+
+        /**
+         * Click on a link that's supposed to go to a view
+         */
+        goToView: function(event) {
+            var $target = $(event.target);
+
+            var targetSettings = this.parseSettings($target.attr("href"));
+
+            this.updateSettings(this.mergeSettings(this.settings, targetSettings));
+            this.showView();
+
+            // Never do what the link normally does -> navigate uncontrollably
+            event.preventDefault();
+            return false;
+        },
+
+        /**
+         * Add something to browser navigation history
+         *
+         * @param url
+         */
+        addToHistory: function(url) {
+            if (this.historyTimeout !== null) {
+                clearTimeout(this.historyTimeout);
+            }
+
+            setTimeout(function() {
+                this.historyTimeout = null;
+                window.history.pushState({}, "ThroneStats - " + this.settings.view, url);
+            }.bind(this), 50);
         },
 
         /**
@@ -347,32 +471,6 @@ $(function () {
         popup: throttle(function (header, content, lifetime) {
             Popup.create(this, header, content, lifetime);
         }, 1500),
-
-        /**
-         * Get URL to overlay regardless of current settings
-         *
-         * @param settings
-         * @returns {string}
-         */
-        getOverlayLink: function (settings) {
-            var args = [
-                "view=overlay",
-                "steamId64=" + settings.steamId64,
-                "streamKey=" + settings.streamKey
-            ];
-
-            var location = String(window.location);
-            var pos = location.indexOf("#");
-            if (pos !== -1) {
-                location = location.substr(0, pos);
-            }
-
-            var link = location + "#" + args.join("&");
-
-            log("Link: " + link);
-
-            return link;
-        },
 
         /**
          * Get overlay link -button.
@@ -402,7 +500,7 @@ $(function () {
                 return;
             }
 
-            window.history.pushState({}, "ThroneStats Overlay", this.getOverlayLink(this.settings));
+            this.addToHistory(this.getOverlayLink(this.settings));
             this.showView("overlay");
         },
 
@@ -525,8 +623,14 @@ $(function () {
                 $("#get-overlay, #get-overlay-tab").removeClass("active");
                 $("#information, #information-tab").removeClass("active");
 
-                var selector = "#" + view + ", #" + view + "-tab";
+                var tab = "#" + view + "-tab";
+                var selector = "#" + view + ", " + tab;
+
                 $(selector).addClass("active");
+
+                $("html, body").animate({
+                    scrollTop: $(tab).offset().top
+                }, 150);
 
                 this.activeView = view;
             }
@@ -564,7 +668,7 @@ $(function () {
             var pos = newURL.indexOf("#");
             if (pos !== -1) {
                 var hash = newURL.substr(pos);
-                this.updateSettings(this.parseSettings());
+                this.updateSettings(this.mergeSettings(this.settings, this.parseSettings(hash)));
                 this.showView();
             }
         },

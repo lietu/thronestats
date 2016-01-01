@@ -117,20 +117,7 @@ func (rs *RunStats) UpdateStatsContainer(sc *StatsContainer) {
 		}
 	}
 
-	// Calculate stats
-	weapon := sc.getMostPopular(sc.WeaponChoices, "1")
-	causeOfDeath := sc.getMostPopular(sc.CausesOfDeath, "")
-	mutation := sc.getMostPopular(sc.MutationChoices, "")
-	crown := sc.getMostPopular(sc.CrownChoices, "1")
-	character := sc.getMostPopular(sc.Characters, "-1")
-	level := sc.getMostPopular(sc.DeathsByLevel, "")
-
-	sc.MostPopularWeapon = Weapons[ToInt(weapon)]
-	sc.MostCommonCauseOfDeath = Enemies[ToInt(causeOfDeath)]
-	sc.MostPopularMutation = Mutations[ToInt(mutation)]
-	sc.MostPopularCrown = Crowns[ToInt(crown)]
-	sc.MostPopularCharacter = Characters[ToInt(character)]
-	sc.MostCommonDeathLevel = level
+	sc.UpdateStats()
 }
 
 func (rs *RunStats) Reset() {

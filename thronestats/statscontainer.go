@@ -83,6 +83,23 @@ func (sc *StatsContainer) GetLevelDeathRate(level string) string {
 	return sc.getRate(sc.DeathsByLevel[level], false)
 }
 
+func (sc *StatsContainer) UpdateStats() {
+	// Calculate stats
+	weapon := sc.getMostPopular(sc.WeaponChoices, "1")
+	causeOfDeath := sc.getMostPopular(sc.CausesOfDeath, "")
+	mutation := sc.getMostPopular(sc.MutationChoices, "")
+	crown := sc.getMostPopular(sc.CrownChoices, "1")
+	character := sc.getMostPopular(sc.Characters, "0")
+	level := sc.getMostPopular(sc.DeathsByLevel, "")
+
+	sc.MostPopularWeapon = Weapons[ToInt(weapon)]
+	sc.MostCommonCauseOfDeath = Enemies[ToInt(causeOfDeath)]
+	sc.MostPopularMutation = Mutations[ToInt(mutation)]
+	sc.MostPopularCrown = Crowns[ToInt(crown)]
+	sc.MostPopularCharacter = Characters[ToInt(character)]
+	sc.MostCommonDeathLevel = level
+}
+
 func (sc *StatsContainer) load() {
 	filename := sc.getFilename()
 	data, err := ioutil.ReadFile(filename)
@@ -98,6 +115,8 @@ func (sc *StatsContainer) load() {
 			log.Fatalf("error: %v", err)
 		}
 	}
+
+	sc.UpdateStats()
 }
 
 func (sc *StatsContainer) ToJson() []byte {

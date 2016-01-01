@@ -966,8 +966,8 @@ $(function () {
          */
         _switchTab: function (view) {
             if (view != this.activeView) {
-                $("#get-overlay, #get-overlay-tab").removeClass("active");
-                $("#information, #information-tab").removeClass("active");
+                $(".tabular.menu .item").removeClass("active");
+                $("#information, #get-overlay, #stats").removeClass("active");
 
                 var tab = "#" + view + "-tab";
                 var selector = "#" + view + ", " + tab;
@@ -1012,7 +1012,7 @@ $(function () {
             var skip = {
                 "characters": ["0", "13", "14", "16"],
                 "causesOfDeath": [],
-                "crownChoices": [],
+                "crownChoices": ["1"],
                 "deathsByLevel": [],
                 "mutationChoices": [],
                 "weaponChoices": ["0"]

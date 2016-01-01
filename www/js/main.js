@@ -1,5 +1,314 @@
 $(function () {
 
+    /**
+     * Names of all the items we want to show names for
+     */
+    var NAMES = {
+        characters: {
+            0: "Random",
+            1: "Fish",
+            2: "Crystal",
+            3: "Eyes",
+            4: "Melting",
+            5: "Plant",
+            6: "Yung Venuz",
+            7: "Steroids",
+            8: "Robot",
+            9: "Chicken",
+            10: "Rebel",
+            11: "Horror",
+            12: "Rogue",
+            13: "Big Dog",
+            14: "Skeleton",
+            15: "Frog",
+            16: "Cuz"
+        },
+        causesOfDeath: {
+            0: "Bandit",
+            1: "Maggot",
+            2: "Rad Maggot",
+            3: "Big Maggot",
+            4: "Scorpion",
+            5: "Gold Scorpion",
+            6: "Big Bandit",
+            7: "Rat",
+            8: "Rat King",
+            9: "Green Rat",
+            10: "Gator",
+            11: "Ballguy",
+            12: "Toxic Ballguy",
+            13: "Ballguy Mama",
+            14: "Assassin",
+            15: "Raven",
+            16: "Salamander",
+            17: "Sniper",
+            18: "Big Dog",
+            19: "Spider",
+            20: "New Cave Thing",
+            21: "Laser Crystal",
+            22: "Hyper Crystal",
+            23: "Snow Bandit",
+            24: "Snowbot",
+            25: "Wolf",
+            26: "Snowtank",
+            27: "Lil Hunter",
+            28: "Freak",
+            29: "Explo Freak",
+            30: "Rhino Freak",
+            31: "Necromancer",
+            32: "Turret",
+            33: "Technomancer",
+            34: "Guardian",
+            35: "Explo Guardian",
+            36: "Dog Guardian",
+            37: "Throne",
+            38: "Throne II",
+            39: "Bone Fish",
+            40: "Crab",
+            41: "Turtle",
+            42: "Venus Grunt",
+            43: "Venus Sarge",
+            44: "Fireballer",
+            45: "Super Fireballer",
+            46: "Jock",
+            47: "Cursed Spider",
+            48: "Cursed Crystal",
+            49: "Mimic",
+            50: "Health Mimic",
+            51: "Grunt",
+            52: "Inspector",
+            53: "Shielder",
+            54: "Crown Guardian",
+            55: "Explosion",
+            56: "Small Explosion",
+            57: "Fire Trap",
+            58: "Shield",
+            59: "Toxin",
+            60: "Horror",
+            61: "Barrel",
+            62: "Toxic Barrel",
+            63: "Golden Barrel",
+            64: "Car",
+            65: "Venus Car",
+            66: "Venus Car Fixed",
+            67: "Venuz Car 2",
+            68: "Icy Car",
+            69: "Thrown Car",
+            70: "Mine",
+            71: "Crown of Death",
+            72: "Rogue Strike",
+            73: "Blood Launcher",
+            74: "Blood Cannon",
+            75: "Blood Hammer",
+            76: "Disc",
+            77: "Curse Eat",
+            78: "Big Dog Missile",
+            79: "Halloween Bandit",
+            80: "Lil Hunter Death",
+            81: "Throne Death",
+            82: "Jungle Bandit",
+            83: "Jungle Assassin",
+            84: "Jungle Fly",
+            85: "Crown of Hatred",
+            86: "Ice Flower",
+            87: "Cursed Ammo Pickup",
+            88: "Underwater Lightning",
+            89: "Elite Grunt",
+            90: "Blood Gamble",
+            91: "Elite Shielder",
+            92: "Elite Inspector",
+            93: "Captain",
+            94: "Van",
+            95: "Buff Gator",
+            96: "Generator",
+            97: "Lightning Crystal",
+            98: "Golden Snowtank",
+            99: "Green Explosion",
+            100: "Small Generator",
+            101: "Golden Disc",
+            102: "Big Dog Explosion",
+            103: "IDPD Freak",
+            104: "Throne II Death",
+            105: "Oasis Boss",
+            "-1": "Nothing"
+        },
+        crownChoices: {
+            1: "Bare Head",
+            2: "Crown of Death",
+            3: "Crown of Life",
+            4: "Crown of Haste",
+            5: "Crown of Guns",
+            6: "Crown of Hatred",
+            7: "Crown of Blood",
+            8: "Crown of Destiny",
+            9: "Crown of Love",
+            10: "Crown of Risk",
+            11: "Crown of Curses",
+            12: "Crown of Luck",
+            13: "Crown of Protection"
+        },
+        mutationChoices: {
+            0: "Heavy Heart",
+            1: "Rhino Skin",
+            2: "Extra Feet",
+            3: "Plutonium Hunger",
+            4: "Rabbit Paw",
+            5: "Throne Butt",
+            6: "Lucky Shot",
+            7: "Bloodlust",
+            8: "Gamma Guts",
+            9: "Second Stomach",
+            10: "Back Muscle",
+            11: "Scarier Face",
+            12: "Euphoria",
+            13: "Long Arms",
+            14: "Boiling Veins",
+            15: "Shotgun Shoulders",
+            16: "Recycle Gland",
+            17: "Laser Brain",
+            18: "Last Wish",
+            19: "Eagle Eyes",
+            20: "Impact Wrists",
+            21: "Bolt Marrow",
+            22: "Stress",
+            23: "Trigger Fingers",
+            24: "Sharp Teeth",
+            25: "Patience",
+            26: "Hammer Head",
+            27: "Strong Spirit",
+            28: "Open Mind"
+        },
+        weaponChoices: {
+            0: "Nothing",
+            1: "Revolver",
+            2: "Triple Machinegun",
+            3: "Wrench",
+            4: "Machinegun",
+            5: "Shotgun",
+            6: "Crossbow",
+            7: "Grenade Launcher",
+            8: "Double Shotgun",
+            9: "Minigun",
+            10: "Auto Shotgun",
+            11: "Auto Crossbow",
+            12: "Super Crossbow",
+            13: "Shovel",
+            14: "Bazooka",
+            15: "Sticky Launcher",
+            16: "SMG",
+            17: "Assault Rifle",
+            18: "Disc Gun",
+            19: "Laser Pistol",
+            20: "Laser Rifle",
+            21: "Slugger",
+            22: "Gatling Slugger",
+            23: "Assault Slugger",
+            24: "Energy Sword",
+            25: "Super Slugger",
+            26: "Hyper Rifle",
+            27: "Screwdriver",
+            28: "Laser Minigun",
+            29: "Blood Launcher",
+            30: "Splinter Gun",
+            31: "Toxic Bow",
+            32: "Sentry Gun",
+            33: "Wave Gun",
+            34: "Plasma Gun",
+            35: "Plasma Cannon",
+            36: "Energy Hammer",
+            37: "Jackhammer",
+            38: "Flak Cannon",
+            39: "Golden Revolver",
+            40: "Golden Wrench",
+            41: "Golden Machinegun",
+            42: "Golden Shotgun",
+            43: "Golden Crossbow",
+            44: "Golden Grenade Launcer",
+            45: "Golden Laser Pistol",
+            46: "Chicken Sword",
+            47: "Nuke Launcher",
+            48: "Ion Cannon",
+            49: "Quadruple Machinegun",
+            50: "Flamethrower",
+            51: "Dragon",
+            52: "Flare Gun",
+            53: "Energy Screwdriver",
+            54: "Hyper Launcher",
+            55: "Laser Cannon",
+            56: "Rusty Revolver",
+            57: "Lightning Pistol",
+            58: "Lightning Rifle",
+            59: "Lightning Shotgun",
+            60: "Super Flak Cannon",
+            61: "Sawed-off Shotgun",
+            62: "Splinter Pistol",
+            63: "Super Splinter Gun",
+            64: "Lighting SMG",
+            65: "Smart Gun",
+            66: "Heavy Crossbow",
+            67: "Blood Hammer",
+            68: "Lightning Cannon",
+            69: "Pop Gun",
+            70: "Plasma Rifle",
+            71: "Pop Rifle",
+            72: "Toxic Launcher",
+            73: "Flame Cannon",
+            74: "Lightning Hammer",
+            75: "Flame Shotgun",
+            76: "Double Flame Shotgun",
+            77: "Auto Flame Shotgun",
+            78: "Cluster Launcher",
+            79: "Grenade Shotgun",
+            80: "Grenade Rifle",
+            81: "Rogue Rifle",
+            82: "Party Gun",
+            83: "Double Minigun",
+            84: "Gatling Bazooka",
+            85: "Auto Grenade Shotgun",
+            86: "Ultra Revolver",
+            87: "Ultra Laser Pistol",
+            88: "Sledgehammer",
+            89: "Heavy Revolver",
+            90: "Heavy Machinegun",
+            91: "Heavy Slugger",
+            92: "Ultra Shovel",
+            93: "Ultra Shotgun",
+            94: "Ultra Crossbow",
+            95: "Ultra Grenade Launcher",
+            96: "Plasma Minigun",
+            97: "Devastator",
+            98: "Golden Plasma Gun",
+            99: "Golden Slugger",
+            100: "Golden Splinter Gun",
+            101: "Golden Screwdriver",
+            102: "Golden Bazooka",
+            103: "Golden Assault Rifle",
+            104: "Super Disc Gun",
+            105: "Heavy Auto Crossbow",
+            106: "Heavy Assault Rifle",
+            107: "Blood Cannon",
+            108: "Dog Spin Attack",
+            109: "Dog Missile",
+            110: "Incinerator",
+            111: "Super Plasma Cannon",
+            112: "Seeker Pistol",
+            113: "Seeker Shotgun",
+            114: "Eraser",
+            115: "Guitar",
+            116: "Bouncer SMG",
+            117: "Bouncer Shotgun",
+            118: "Hyper Slugger",
+            119: "Super Bazooka",
+            120: "Frog Pistol",
+            121: "Black Sword",
+            122: "Golden Nuke Launcher",
+            123: "Golden Disc Gun",
+            124: "Heavy Grenade Launcher",
+            125: "Gun Gun",
+            201: "Golden Frog Pistol"
+        }
+    };
+
     function log() {
         if (console && console.log) {
             console.log.apply(console, Array.prototype.slice.call(arguments));
@@ -179,11 +488,15 @@ $(function () {
 
             this.defaultSettings = {
                 steamId64: null,
+                statsSteamId64: null,
                 streamKey: null,
                 popupLifetime: 15000,
                 dataEndpoint: "data",
                 view: "information"
             };
+
+            this.stats = {};
+            this.globalStats = {};
 
             this.subscribed = false;
             this.settings = null;
@@ -206,25 +519,30 @@ $(function () {
 
             this.contentView = rivets.bind(this.$content, {
                 settings: this.settings,
+                stats: this.stats,
                 ui: {
                     getOverlayLink: this.showOverlayLink.bind(this),
                     viewOverlay: this.viewOverlay.bind(this),
-                    showInformation: function() { this.showView("information"); }.bind(this),
-                    showGetOverlay: function() { this.showView("get-overlay"); }.bind(this),
+                    showInformation: function () {
+                        this.showView("information");
+                    }.bind(this),
+                    showGetOverlay: function () {
+                        this.showView("get-overlay");
+                    }.bind(this),
+                    showStats: function () {
+                        this.showView("stats");
+                    }.bind(this),
+                    showPlayerStats: this.showPlayerStats.bind(this),
+                    showGlobalStats: function() {
+                        this._updateStats("Global run data", this.globalStats);
+                    }.bind(this),
                     copyLinkToClipboard: this.copyLinkToClipboard.bind(this),
                     playVideo: this.playVideo.bind(this),
                     goToView: this.goToView.bind(this),
                     steamId64HelpVisible: false,
                     streamKeyHelpVisible: false
                 },
-                globalStats: {
-                    mostPopularWeapon: "please wait...",
-                    mostCommonCauseOfDeath: "please wait...",
-                    mostPopularMutation: "please wait...",
-                    mostPopularCrown: "please wait...",
-                    mostPopularCharacter: "please wait...",
-                    mostCommonDeathLevel: "please wait...",
-                }
+                globalStats: this.globalStats
             });
 
             this.connect();
@@ -238,7 +556,7 @@ $(function () {
          *
          * @param settings
          */
-        updateSettings: function(settings) {
+        updateSettings: function (settings) {
             this.settings = settings;
 
             if (this.settings.view === null) {
@@ -274,7 +592,7 @@ $(function () {
          * @param old
          * @param settings
          */
-        mergeSettings: function(old, settings) {
+        mergeSettings: function (old, settings) {
             var newSettings = {};
             var key;
 
@@ -298,7 +616,7 @@ $(function () {
          *
          * @return {string}
          */
-        getLocation: function() {
+        getLocation: function () {
             var location = String(window.location);
             var pos = location.indexOf("#");
             if (pos !== -1) {
@@ -313,7 +631,7 @@ $(function () {
          *
          * @param settings
          */
-        settingsToUrl: function(settings) {
+        settingsToUrl: function (settings) {
             settings = settings || this.settings;
             var args = [];
 
@@ -328,7 +646,7 @@ $(function () {
             var url = this.getLocation();
 
             if (args.length > 0) {
-                 url = url + "#" + args.join("&");
+                url = url + "#" + args.join("&");
             }
 
             log("URL: " + url);
@@ -389,7 +707,7 @@ $(function () {
          *
          * @param {String} view "overlay" or one of the content area tab names
          */
-        showView: function(view) {
+        showView: function (view) {
             if (view) {
                 this.settings.view = view;
             }
@@ -418,7 +736,7 @@ $(function () {
         /**
          * Click on a link that's supposed to go to a view
          */
-        goToView: function(event) {
+        goToView: function (event) {
             var $target = $(event.target);
 
             var targetSettings = this.parseSettings($target.attr("href"));
@@ -436,12 +754,12 @@ $(function () {
          *
          * @param url
          */
-        addToHistory: function(url) {
+        addToHistory: function (url) {
             if (this.historyTimeout !== null) {
                 clearTimeout(this.historyTimeout);
             }
 
-            setTimeout(function() {
+            setTimeout(function () {
                 this.historyTimeout = null;
                 window.history.pushState({}, "ThroneStats - " + this.settings.view, url);
             }.bind(this), 50);
@@ -510,6 +828,22 @@ $(function () {
         copyLinkToClipboard: function () {
             copyTextToClipboard(this.getOverlayLink(this.settings));
             this.popup("Link copied", "Overlay link copied to clipboard. CTRL+V to paste.", 2500);
+        },
+
+        /**
+         * "Show player stats" -button
+         */
+        showPlayerStats: function() {
+            var steamId64 = this.settings.statsSteamId64;
+
+            if (steamId64 === null) {
+                this.popup("Error", "Enter a SteamID64");
+            } else if (this.steamId64Ok(steamId64)) {
+                this._requestPlayerStats(steamId64);
+                this._updateStats("Global run data", this.globalStats);
+            } else {
+                this.popup("Error", "SteamID64 " + steamId64 + " looks invalid.");
+            }
         },
 
         /**
@@ -589,7 +923,19 @@ $(function () {
             return /^[0-9]{17}$/.test(steamId64);
         },
 
+        /**
+         * Calculate percentages
+         *
+         * @param totalRuns
+         * @param runs
+         */
+        getPercentage: function (totalRuns, runs) {
+            if (totalRuns === 0 || runs === 0) {
+                return "0.00%";
+            }
 
+            return String(((runs / totalRuns) * 100).toFixed(2)) + "%"
+        },
 
         /*
          * Private methods, shouldn't be called unless you know what you're doing
@@ -642,11 +988,84 @@ $(function () {
          * @param data
          */
         _updateGlobalStats: function (data) {
+            if (this.settings.statsSteamId64 === null) {
+                this._updateStats("Global run data", data);
+            }
+
             for (var key in data) {
                 if (data.hasOwnProperty(key)) {
-                    this.contentView.models.globalStats[key] = data[key];
+                    this.globalStats[key] = data[key];
                 }
             }
+        },
+
+        /**
+         * Update statistical data from given data, calculates percentages
+         *
+         * @param steamIdText
+         * @param data
+         * @private
+         */
+        _updateStats: function (steamIdText, data) {
+            this.stats.steamIdText = steamIdText;
+
+            var skip = {
+                "characters": ["0", "13", "14", "16"],
+                "causesOfDeath": [],
+                "crownChoices": [],
+                "deathsByLevel": [],
+                "mutationChoices": [],
+                "weaponChoices": ["0"]
+            };
+
+            for (var key in data) {
+                if (data.hasOwnProperty(key)) {
+                    switch (key) {
+                        case "characters":
+                        case "causesOfDeath":
+                        case "crownChoices":
+                        case "deathsByLevel":
+                        case "mutationChoices":
+                        case "weaponChoices":
+                            this.stats[key] = [];
+                            for (var item in data[key]) {
+                                if (data[key].hasOwnProperty(item)) {
+                                    if (skip[key].indexOf(item) !== -1) {
+                                        continue;
+                                    }
+
+                                    var name = item;
+                                    if (key != "deathsByLevel") {
+                                        name = NAMES[key][item];
+                                    }
+
+                                    this.stats[key].push({
+                                        name: name,
+                                        runs: data[key][item],
+                                        percentage: this.getPercentage(data.runs, data[key][item])
+                                    })
+                                }
+                            }
+                            break;
+
+                        default:
+                            this.stats[key] = data[key];
+                    }
+                }
+            }
+        },
+
+        /**
+         * Request player stats from the server.
+         * @param steamId64
+         * @private
+         */
+        _requestPlayerStats: function(steamId64) {
+            log("Requesting stats for " + steamId64);
+            this.websocket.send(JSON.stringify({
+                type: "requestStats",
+                steamId64: steamId64
+            }));
         },
 
         /*
@@ -660,7 +1079,7 @@ $(function () {
          * @param event
          * @private
          */
-        _onHashChange: function(event) {
+        _onHashChange: function (event) {
             var newURL = event.newURL;
 
             log("Hash change detected, new URL: " + newURL);
@@ -699,6 +1118,10 @@ $(function () {
                 var content = JSON.parse(data.content);
                 log("Got global stats update", content);
                 this._updateGlobalStats(content);
+            } else if (data.type === "stats") {
+                var content = JSON.parse(data.content);
+                log("Got stats update for " + data.header, content);
+                this._updateStats("Player " + data.header, content);
             } else {
                 log("Got unsupported message?", data);
             }

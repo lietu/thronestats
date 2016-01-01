@@ -34,6 +34,9 @@
         <div rv-on-click="ui.showGetOverlay" id="get-overlay-tab" class="item">
             Get overlay
         </div>
+        <div rv-on-click="ui.showStats" id="stats-tab" class="item">
+            View stats
+        </div>
     </div>
     <div id="information" class="ui bottom attached active tab segment">
         <h1 class="ui header">ThroneStats</h1>
@@ -225,6 +228,124 @@
             similarly to CLR Browser in OBS. If you can provide full set of
             instructions, please contact me.</p>
     </div>
+
+    <div id="stats" class="ui bottom attached tab segment">
+        <h2 class="ui header">View statistics</h2>
+        <div class="ui form">
+            <div class="one fields">
+                <div class="field">
+                    <label>Steam ID 64 (<a href="https://steamid.io/"
+                                           target="_blank">Search</a>)</label>
+                    <input type="text" rv-value="settings.statsSteamId64"
+                           placeholder="Steam ID 64">
+                </div>
+            </div>
+            <div class="one fields">
+                <button rv-on-click="ui.showPlayerStats"
+                        class="ui primary button">
+                    Show player stats
+                </button>
+                <button rv-on-click="ui.showGlobalStats"
+                        class="ui button">
+                    Show global stats
+                </button>
+            </div>
+        </div>
+
+        <h2 class="ui header">General information</h2>
+
+        <table class="ui collapsing celled table">
+            <thead>
+                <tr>
+                    <th colspan="2"><span rv-text="stats.steamIdText"></span></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Recorded runs</td><td rv-text="stats.runs"></td></tr>
+                <tr><td>Favorite character</td><td rv-text="stats.mostPopularCharacter"></td>
+                <tr><td>Favorite weapon</td><td rv-text="stats.mostPopularWeapon"></td>
+                <tr><td>Favorite crown</td><td rv-text="stats.mostPopularCrown"></td>
+                <tr><td>Favorite mutation</td><td rv-text="stats.mostPopularMutation"></td>
+                <tr><td>Most deaths caused by </td><td rv-text="stats.mostCommonCauseOfDeath"></td>
+                <tr><td>Most deaths in </td><td rv-text="stats.mostCommonDeathLevel"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 class="ui header">Characters</h2>
+        <table class="ui collapsing celled table">
+            <thead>
+                <tr><th>Character</th><th>Runs</th><th>%</th></tr>
+            </thead>
+            <tbody>
+                <tr rv-each-item="stats.characters">
+                    <td rv-text="item.name"></td>
+                    <td rv-text="item.runs"></td>
+                    <td rv-text="item.percentage"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 class="ui header">Mutations</h2>
+        <table class="ui collapsing celled table">
+            <thead>
+                <tr><th>Mutation</th><th>Runs</th><th>%</th></tr>
+            </thead>
+            <tbody>
+                <tr rv-each-item="stats.mutationChoices">
+                    <td rv-text="item.name"></td>
+                    <td rv-text="item.runs"></td>
+                    <td rv-text="item.percentage"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 class="ui header">Crowns</h2>
+        <table class="ui collapsing celled table">
+            <thead>
+                <tr><th>Crown</th><th>Runs</th><th>%</th></tr>
+            </thead>
+            <tbody>
+                <tr rv-each-item="stats.crownChoices">
+                    <td rv-text="item.name"></td>
+                    <td rv-text="item.runs"></td>
+                    <td rv-text="item.percentage"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 class="ui header">Weapons</h2>
+        <table class="ui collapsing celled table">
+            <thead>
+                <tr><th>Weapon</th><th>Runs</th><th>%</th></tr>
+            </thead>
+            <tbody>
+                <tr rv-each-item="stats.weaponChoices">
+                    <td rv-text="item.name"></td>
+                    <td rv-text="item.runs"></td>
+                    <td rv-text="item.percentage"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 class="ui header">Deaths</h2>
+        <table class="ui collapsing celled table">
+            <thead>
+                <tr><th>Level</th><th>Runs</th><th>%</th></tr>
+            </thead>
+            <tbody>
+                <tr rv-each-item="stats.deathsByLevel">
+                    <td rv-text="item.name"></td>
+                    <td rv-text="item.runs"></td>
+                    <td rv-text="item.percentage"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    <!-- Help modals -->
+
     <div id="steamId64Help" class="ui modal">
         <i class="close icon"></i>
 
@@ -245,10 +366,10 @@
             </div>
         </div>
         <div class="actions">
-            <div class="ui button">Cancel</div>
             <div class="ui button">OK</div>
         </div>
     </div>
+
     <div id="streamKeyHelp" class="ui modal">
         <i class="close icon"></i>
 
@@ -266,7 +387,6 @@
             </div>
         </div>
         <div class="actions">
-            <div class="ui button">Cancel</div>
             <div class="ui button">OK</div>
         </div>
     </div>

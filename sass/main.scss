@@ -20,7 +20,8 @@ section {
 }
 
 #popups {
-  position: absolute;
+  position: fixed;
+  top: 0;
   display: block;
   width: 100%;
   z-index: 9999;

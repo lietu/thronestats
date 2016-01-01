@@ -73,6 +73,29 @@ func onSubscribe(uuid uuid.UUID, message MessageIn) {
 	SendToConnection(uuid, m.ToJson())
 }
 
+func onStatsRequest(uuid uuid.UUID, message MessageIn) {
+	sc := NewStatsContainer(message.SteamId64)
+
+	var m MessageOut
+
+	if (sc.Loaded == false) {
+		log.Printf("Couldn't find data for player %s", message.SteamId64)
+		m = MessageOut{
+			"message",
+			"Error",
+			fmt.Sprintf("Couldn't find data for player %s", message.SteamId64),
+		}
+	} else {
+		m = MessageOut{
+			"stats",
+			message.SteamId64,
+			string(sc.ToJson()[:]),
+		}
+	}
+
+	SendToConnection(uuid, m.ToJson())
+}
+
 func Unsubscribe(uuid uuid.UUID) {
 	as, ok := subscriptions[uuid]
 
@@ -104,5 +127,9 @@ func HandleMessage(uuid uuid.UUID, messageContent []byte) {
 	case message.Type == "subscribe":
 		log.Printf("Connection %s subscribing to %s", uuid.String(), message.SteamId64)
 		onSubscribe(uuid, message)
+
+	case message.Type == "requestStats":
+		log.Printf("Connection %s requested stats for %s", uuid.String(), message.SteamId64)
+		onStatsRequest(uuid, message)
 	}
 }

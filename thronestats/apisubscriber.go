@@ -159,6 +159,13 @@ func (as *ApiSubscriber) poll() {
 		return
 	}
 
+	if strings.Contains(string(body[:]), "<html>") {
+		msg := fmt.Sprintf("Could not get data with Steam ID 64 %s and Stream Key %s. Have you done any runs that would've gotten recorded?", as.SteamId64, as.StreamKey)
+		as.SendMessage("Invalid settings", msg)
+		go Unsubscribe(as.ClientUUID)
+		return
+	}
+
 	response := ApiResponse{}
 
 	json.Unmarshal(body, &response)

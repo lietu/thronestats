@@ -1012,7 +1012,7 @@ $(function () {
             var skip = {
                 "characters": ["", "0", "13", "14", "16"],
                 "causesOfDeath": [""],
-                "crownChoices": ["", "1"],
+                "crownChoices": ["", "0", "1"],
                 "deathsByLevel": [""],
                 "mutationChoices": [""],
                 "weaponChoices": ["", "0"]

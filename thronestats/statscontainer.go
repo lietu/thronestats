@@ -13,6 +13,7 @@ var GlobalStats *StatsContainer
 
 type StatsContainer struct {
 	SteamId64              string           `json:"-"`
+	Loaded                 bool             `json:"-"`
 	Running                bool             `json:"-"`
 	RunStats               RunStats         `json:"-"`
 	Runs                   int              `json:"runs"`
@@ -107,16 +108,16 @@ func (sc *StatsContainer) load() {
 	if err == nil {
 		log.Printf("Loaded stats information from %s", filename)
 		json.Unmarshal(data, sc)
+
+		sc.UpdateStats()
+		sc.Loaded = true
 	} else {
 		if os.IsNotExist(err) {
 			log.Printf("%s does not exist, do not have existing data.", filename)
-			sc.Save()
 		} else {
 			log.Fatalf("error: %v", err)
 		}
 	}
-
-	sc.UpdateStats()
 }
 
 func (sc *StatsContainer) ToJson() []byte {
@@ -177,6 +178,7 @@ func NewStatsContainer(steamId64 string) *StatsContainer {
 
 	sc := StatsContainer{
 		steamId64,
+		false,
 		false,
 		*NewRunStats(),
 		0,

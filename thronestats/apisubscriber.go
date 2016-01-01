@@ -25,7 +25,7 @@ func (as *ApiSubscriber) onWeaponPickup(weaponCode int) {
 	rate := as.statsContainer.GetWeaponRate(weaponCode, 1)
 	globalRate := GlobalStats.GetWeaponRate(weaponCode, 1)
 
-	header := fmt.Sprintf("Picked up %s!", weapon)
+	header := fmt.Sprintf("%s!", weapon)
 	content := fmt.Sprintf("You pick up %s on %s of your runs. %s is picked up on %s of all runs.", weapon, rate, weapon, globalRate)
 
 	as.SendMessage(header, content)
@@ -38,7 +38,7 @@ func (as *ApiSubscriber) onNewMutation(mutationCode int) {
 	rate := as.statsContainer.GetMutationRate(mutationCode, 1)
 	globalRate := GlobalStats.GetMutationRate(mutationCode, 1)
 
-	header := fmt.Sprintf("Chose %s!", mutation)
+	header := fmt.Sprintf("%s!", mutation)
 	content := fmt.Sprintf("You choose %s on %s of your runs. %s is chosen on %s of all runs.", mutation, rate, mutation, globalRate)
 
 	as.SendMessage(header, content)
@@ -51,7 +51,7 @@ func (as *ApiSubscriber) onNewCrown(crownCode int) {
 	rate := as.statsContainer.GetMutationRate(crownCode, 1)
 	globalRate := GlobalStats.GetMutationRate(crownCode, 1)
 
-	header := fmt.Sprintf("Chose %s!", crown)
+	header := fmt.Sprintf("%s!", crown)
 	content := fmt.Sprintf("You choose %s on %s of your runs. %s is chosen on %s of all runs.", crown, rate, crown, globalRate)
 
 	as.SendMessage(header, content)
@@ -68,7 +68,7 @@ func (as *ApiSubscriber) onDeath() {
 	rate := as.statsContainer.GetCauseOfDeathRate(as.runData.LastDamagedBy)
 	globalRate := GlobalStats.GetCauseOfDeathRate(as.runData.LastDamagedBy)
 
-	header := fmt.Sprintf("Killed by %s", enemy)
+	header := fmt.Sprintf("%s", enemy)
 	content := fmt.Sprintf("You die to %s on %s of your runs. %s ends %s of all runs.", enemy, rate, enemy, globalRate)
 
 	as.SendMessage(header, content)
@@ -84,7 +84,7 @@ func (as *ApiSubscriber) onDeath() {
 
 	as.SendMessage(header, content)
 
-	log.Printf("Player %s to a %s on %s", as.SteamId64, enemy, level)
+	log.Printf("Player %s died to a %s on %s", as.SteamId64, enemy, level)
 }
 
 func (as *ApiSubscriber) onNewRun(rd *RunData) {

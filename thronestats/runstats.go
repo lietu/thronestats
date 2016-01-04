@@ -49,7 +49,7 @@ func (rs *RunStats) MutationChoice(mutation int) bool {
 }
 
 func (rs *RunStats) CrownChoice(crown int) bool {
-	if crown == DEFAULT_CROWN {
+	if crown == DEFAULT_CROWN || crown == 0 {
 		return false
 	}
 

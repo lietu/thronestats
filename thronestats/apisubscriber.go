@@ -42,7 +42,7 @@ func (as *ApiSubscriber) onNewMutation(mutationCode int) {
 
 	header := fmt.Sprintf("%s!", mutation)
 	content := fmt.Sprintf("You choose %s on %s of your runs. %s is chosen on %s of all runs.", mutation, rate, mutation, globalRate)
-	icon := ""
+	icon := GetMutationIcon(mutationCode)
 
 	as.SendMessage(header, content, icon)
 

@@ -4,6 +4,10 @@ import (
 	"fmt"
 )
 
+func GetMutationIcon(mutation int) string {
+	return fmt.Sprintf("img/mutationChoices/%d.png", mutation)
+}
+
 
 func GetCharacterIcon(character int, bskin bool) string {
 	bskinTxt := ""

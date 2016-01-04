@@ -17,8 +17,10 @@ section {
   display: block;
   width: 100%;
   z-index: 9999; }
+  #popups .message .icon.custom {
+    margin-top: -12px; }
   #popups .message .icon img {
-    height: 42px; }
+    height: 48px; }
 
 .ui.tabular.menu .item:not(.active) {
   background: #cecece;

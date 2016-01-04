@@ -12,12 +12,13 @@ import (
 )
 
 type ApiSubscriber struct {
-	ClientUUID     uuid.UUID
-	SteamId64      string
-	StreamKey      string
-	done           chan bool
-	runData        *RunData
-	statsContainer *StatsContainer
+	ClientUUID      uuid.UUID
+	SteamId64       string
+	StreamKey       string
+	done            chan bool
+	runData         *RunData
+	statsContainer  *StatsContainer
+	invalidSettings bool
 }
 
 func (as *ApiSubscriber) onWeaponPickup(weaponCode int) {
@@ -161,9 +162,11 @@ func (as *ApiSubscriber) poll() {
 	}
 
 	if strings.Contains(string(body[:]), "<html>") {
-		msg := fmt.Sprintf("Could not get data with Steam ID 64 %s and Stream Key %s. Have you done any runs that would've gotten recorded?", as.SteamId64, as.StreamKey)
-		as.SendMessage("Invalid settings", msg)
-		go Unsubscribe(as.ClientUUID)
+		if as.invalidSettings == false {
+			msg := fmt.Sprintf("Could not get data with the provided Steam ID and Stream Key. Have you done any runs that would've gotten recorded?")
+			as.SendMessage("Invalid settings?", msg)
+			as.invalidSettings = true
+		}
 		return
 	}
 
@@ -227,6 +230,7 @@ func NewApiSubscriber(uuid uuid.UUID, steamId64 string, streamKey string) ApiSub
 		make(chan bool),
 		NewRunData(),
 		NewStatsContainer(steamId64),
+		false,
 	}
 
 	return as

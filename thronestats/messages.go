@@ -26,6 +26,7 @@ func SendHello(uuid uuid.UUID) {
 		"hello",
 		"Hello there!",
 		"Connected to ThroneStats",
+		"",
 	}
 
 	SendToConnection(uuid, m.ToJson())
@@ -36,6 +37,7 @@ func SendGlobalStats(uuid uuid.UUID) {
 		"globalStats",
 		"",
 		string(GlobalStats.ToJson()[:]),
+		"",
 	}
 
 	SendToConnection(uuid, m.ToJson())
@@ -50,6 +52,7 @@ func onSubscribe(uuid uuid.UUID, message MessageIn) {
 			"message",
 			"Failed to subscribe",
 			fmt.Sprintf("Someone else is subscribed to that SteamID64", message.SteamId64),
+			"",
 		}
 
 		SendToConnection(uuid, m.ToJson())
@@ -68,6 +71,7 @@ func onSubscribe(uuid uuid.UUID, message MessageIn) {
 		"message",
 		"Subscribed",
 		fmt.Sprintf("Now tracking runs"),
+		"",
 	}
 
 	SendToConnection(uuid, m.ToJson())
@@ -84,12 +88,14 @@ func onStatsRequest(uuid uuid.UUID, message MessageIn) {
 			"message",
 			"Error",
 			fmt.Sprintf("Couldn't find data for player %s", message.SteamId64),
+			"",
 		}
 	} else {
 		m = MessageOut{
 			"stats",
 			message.SteamId64,
 			string(sc.ToJson()[:]),
+			"",
 		}
 	}
 

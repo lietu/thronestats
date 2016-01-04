@@ -9,6 +9,7 @@ type MessageOut struct {
 	Type    string        `json:"type"`
 	Header  string        `json:"header"`
 	Content string        `json:"content"`
+	Icon    string        `json:"icon"`
 }
 
 func (m MessageOut) ToJson() []byte {

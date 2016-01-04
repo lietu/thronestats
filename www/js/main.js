@@ -431,13 +431,13 @@ $(function () {
     }
 
     var Popup = extend(Object, {
-        create: function (throneStats, header, content, lifetime) {
+        create: function (throneStats, header, content, lifetime, icon) {
             var _this = Object.create(this);
-            _this.initialize(throneStats, header, content, lifetime);
+            _this.initialize(throneStats, header, content, lifetime, icon);
             return _this;
         },
 
-        initialize: function (throneStats, header, content, lifetime) {
+        initialize: function (throneStats, header, content, lifetime, icon) {
             log("Showing popup: ", header, content);
             this.throneStats = throneStats;
 
@@ -447,6 +447,12 @@ $(function () {
                 header: header,
                 content: content
             });
+
+            if (icon) {
+                var $icon = this.$element.find(".icon")
+                $icon.attr("class", "icon");
+                $("<img>").attr("src", icon).appendTo($icon);
+            }
 
             this.$element.css("display", "none");
             this.$element.prependTo("#popups");
@@ -785,9 +791,10 @@ $(function () {
          * @param {String} header Title text
          * @param {String} content Content body
          * @param {Number} lifetime Time in milliseconds to display popup
+         * @param {String} icon The icon to show
          */
-        popup: throttle(function (header, content, lifetime) {
-            Popup.create(this, header, content, lifetime);
+        popup: throttle(function (header, content, lifetime, icon) {
+            Popup.create(this, header, content, lifetime, icon);
         }, 1500),
 
         /**
@@ -1113,7 +1120,7 @@ $(function () {
 
             if (data.type === "message") {
                 log("Got message", data);
-                this.popup(data.header, data.content);
+                this.popup(data.header, data.content, null, data.icon != "" ? data.icon : null);
             } else if (data.type === "globalStats") {
                 var content = JSON.parse(data.content);
                 log("Got global stats update", content);

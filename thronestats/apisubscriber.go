@@ -28,8 +28,9 @@ func (as *ApiSubscriber) onWeaponPickup(weaponCode int) {
 
 	header := fmt.Sprintf("%s!", weapon)
 	content := fmt.Sprintf("You pick up %s on %s of your runs. %s is picked up on %s of all runs.", weapon, rate, weapon, globalRate)
+	icon := ""
 
-	as.SendMessage(header, content)
+	as.SendMessage(header, content, icon)
 
 	log.Printf("Player %s picked up %s", as.SteamId64, weapon)
 }
@@ -41,8 +42,9 @@ func (as *ApiSubscriber) onNewMutation(mutationCode int) {
 
 	header := fmt.Sprintf("%s!", mutation)
 	content := fmt.Sprintf("You choose %s on %s of your runs. %s is chosen on %s of all runs.", mutation, rate, mutation, globalRate)
+	icon := ""
 
-	as.SendMessage(header, content)
+	as.SendMessage(header, content, icon)
 
 	log.Printf("Player %s took %s", as.SteamId64, mutation)
 }
@@ -54,8 +56,9 @@ func (as *ApiSubscriber) onNewCrown(crownCode int) {
 
 	header := fmt.Sprintf("%s!", crown)
 	content := fmt.Sprintf("You choose %s on %s of your runs. %s is chosen on %s of all runs.", crown, rate, crown, globalRate)
+	icon := ""
 
-	as.SendMessage(header, content)
+	as.SendMessage(header, content, icon)
 
 	log.Printf("Player %s chose %s", as.SteamId64, crown)
 }
@@ -71,8 +74,9 @@ func (as *ApiSubscriber) onDeath() {
 
 	header := fmt.Sprintf("%s", enemy)
 	content := fmt.Sprintf("You die to %s on %s of your runs. %s ends %s of all runs.", enemy, rate, enemy, globalRate)
+	icon := ""
 
-	as.SendMessage(header, content)
+	as.SendMessage(header, content, icon)
 
 
 	level := as.runData.Level
@@ -82,8 +86,9 @@ func (as *ApiSubscriber) onDeath() {
 
 	header = fmt.Sprintf("Died on %s", as.runData.Level)
 	content = fmt.Sprintf("You die on %s on %s of your runs.  %s of all runs end at %s.", level, rate, globalRate, level)
+	icon = GetCharacterIcon(as.runData.Character, as.runData.BSkin)
 
-	as.SendMessage(header, content)
+	as.SendMessage(header, content, icon)
 
 	log.Printf("Player %s died to a %s on %s", as.SteamId64, enemy, level)
 }
@@ -97,8 +102,9 @@ func (as *ApiSubscriber) onNewRun(rd *RunData) {
 
 	header := fmt.Sprintf("New run with %s", character)
 	content := fmt.Sprintf("You use %s on %s of your runs. %s is used on %s of all runs.", character, rate, character, globalRate)
+	icon := GetCharacterIcon(rd.Character, rd.BSkin)
 
-	as.SendMessage(header, content)
+	as.SendMessage(header, content, icon)
 
 	log.Printf("Player %s started a new run with %s", as.SteamId64, character)
 }
@@ -164,7 +170,7 @@ func (as *ApiSubscriber) poll() {
 	if strings.Contains(string(body[:]), "<html>") {
 		if as.invalidSettings == false {
 			msg := fmt.Sprintf("Could not get data with the provided Steam ID and Stream Key. Have you done any runs that would've gotten recorded?")
-			as.SendMessage("Invalid settings?", msg)
+			as.SendMessage("Invalid settings?", msg, "")
 			as.invalidSettings = true
 		}
 		return
@@ -212,11 +218,12 @@ func (as *ApiSubscriber) Stop() {
 	as.done <- true
 }
 
-func (as *ApiSubscriber) SendMessage(header string, content string) {
+func (as *ApiSubscriber) SendMessage(header string, content string, icon string) {
 	m := MessageOut{
 		"message",
 		header,
 		content,
+		icon,
 	}
 
 	SendToConnection(as.ClientUUID, m.ToJson())

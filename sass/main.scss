@@ -25,6 +25,10 @@ section {
   display: block;
   width: 100%;
   z-index: 9999;
+
+  .message .icon img {
+    height: 32px;
+  }
 }
 
 .ui.tabular.menu .item:not(.active) {

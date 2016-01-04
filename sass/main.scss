@@ -26,8 +26,13 @@ section {
   width: 100%;
   z-index: 9999;
 
-  .message .icon img {
-    height: 42px;
+  .message .icon {
+    &.custom {
+      margin-top: -12px;
+    }
+    img {
+      height: 48px;
+    }
   }
 }
 

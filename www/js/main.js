@@ -450,7 +450,7 @@ $(function () {
 
             if (icon) {
                 var $icon = this.$element.find(".icon")
-                $icon.attr("class", "icon");
+                $icon.attr("class", "icon custom");
                 $("<img>").attr("src", icon).appendTo($icon);
             }
 

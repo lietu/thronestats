@@ -49,6 +49,11 @@ func (as *ApiSubscriber) onNewMutation(mutationCode int) {
 	log.Printf("Player %s took %s", as.SteamId64, mutation)
 }
 
+func (as *ApiSubscriber) onNewUltra(character int, ultra int) {
+	characterText := Characters[as.runData.Character]
+	log.Printf("Player %s got %s ultra %d", as.SteamId64, characterText, ultra)
+}
+
 func (as *ApiSubscriber) onNewCrown(crownCode int) {
 	crown := Crowns[crownCode]
 	rate := as.statsContainer.GetMutationRate(crownCode, 1)

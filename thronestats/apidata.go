@@ -20,6 +20,59 @@ var Characters = map[int]string{
 	16: "Cuz",
 }
 
+var Ultras = map[int]map[int]string {
+	1: map[int]string{
+		1: "Confiscate",
+		2: "Gun Warrant",
+	},
+	2: map[int]string{
+		1: "Fortress",
+		2: "Juggernaut",
+	},
+	3: map[int]string{
+		1: "Projectile Style",
+		2: "Monster Style",
+	},
+	4: map[int]string{
+		1: "Brain Capacity",
+		2: "Detachment",
+	},
+	5: map[int]string{
+		1: "Trapper",
+		2: "Killer",
+	},
+	6: map[int]string{
+		1: "Ima Gun God",
+		2: "Back 2 Bizniz",
+	},
+	7: map[int]string{
+		1: "Ambidextrous",
+		2: "Get Loaded",
+	},
+	8: map[int]string{
+		1: "Refined Taste",
+		2: "Regurgitate",
+	},
+	9: map[int]string{
+		1: "Harder to kill",
+		2: "Determination",
+	},
+	10: map[int]string{
+		1: "Personal Guard",
+		2: "Riot",
+	},
+	11: map[int]string{
+		1: "Stalker",
+		2: "Anomaly",
+		3: "Meltdown",
+	},
+	12: map[int]string{
+		1: "Super Portal Strike",
+		2: "Super Blast Armor",
+	},
+
+}
+
 var Mutations = map[int]string{
 	0: "Heavy Heart",
 	1: "Rhino Skin",

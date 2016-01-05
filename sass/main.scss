@@ -30,8 +30,11 @@ section {
     &.custom {
       margin-top: -12px;
     }
-    img {
+    i.custom {
       height: 48px;
+      width: 48px;
+      background-size: contain;
+      background-repeat: no-repeat;
     }
   }
 }

@@ -6,6 +6,16 @@ import (
 	"runtime/debug"
 )
 
+func IsIn(list []int, value int) bool {
+	for _, v := range list {
+		if v == value {
+			return true
+		}
+	}
+
+	return false
+}
+
 func ToInt(value string) int {
 	if value == "" {
 		return 0

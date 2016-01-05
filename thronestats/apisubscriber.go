@@ -28,7 +28,7 @@ func (as *ApiSubscriber) onWeaponPickup(weaponCode int) {
 
 	header := fmt.Sprintf("%s!", weapon)
 	content := fmt.Sprintf("You pick up %s on %s of your runs. %s is picked up on %s of all runs.", weapon, rate, weapon, globalRate)
-	icon := ""
+	icon := GetWeaponIcon(weaponCode)
 
 	as.SendMessage(header, content, icon)
 
@@ -61,7 +61,7 @@ func (as *ApiSubscriber) onNewCrown(crownCode int) {
 
 	header := fmt.Sprintf("%s!", crown)
 	content := fmt.Sprintf("You choose %s on %s of your runs. %s is chosen on %s of all runs.", crown, rate, crown, globalRate)
-	icon := ""
+	icon := GetCrownIcon(crownCode)
 
 	as.SendMessage(header, content, icon)
 
@@ -79,7 +79,7 @@ func (as *ApiSubscriber) onDeath() {
 
 	header := fmt.Sprintf("%s", enemy)
 	content := fmt.Sprintf("You die to %s on %s of your runs. %s ends %s of all runs.", enemy, rate, enemy, globalRate)
-	icon := ""
+	icon := GetEnemyIcon(as.runData.LastDamagedBy)
 
 	as.SendMessage(header, content, icon)
 

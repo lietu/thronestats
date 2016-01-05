@@ -18,18 +18,8 @@ type RunStats struct {
 	crowns       []int
 }
 
-func is_in(list []int, value int) bool {
-	for _, v := range list {
-		if v == value {
-			return true
-		}
-	}
-
-	return false
-}
-
 func (rs *RunStats) WeaponPickup(weapon int) bool {
-	if is_in(rs.weapons, weapon) {
+	if IsIn(rs.weapons, weapon) {
 		return false
 	}
 
@@ -39,7 +29,7 @@ func (rs *RunStats) WeaponPickup(weapon int) bool {
 }
 
 func (rs *RunStats) MutationChoice(mutation int) bool {
-	if is_in(rs.mutations, mutation) {
+	if IsIn(rs.mutations, mutation) {
 		return false
 	}
 
@@ -53,7 +43,7 @@ func (rs *RunStats) CrownChoice(crown int) bool {
 		return false
 	}
 
-	if is_in(rs.crowns, crown) {
+	if IsIn(rs.crowns, crown) {
 		if crown != rs.lastCrown {
 			rs.lastCrown = crown
 			return true

@@ -451,7 +451,7 @@ $(function () {
             if (icon) {
                 var $icon = this.$element.find(".icon")
                 $icon.attr("class", "icon custom");
-                $("<i>").attr("src", icon).addClass("custom").appendTo($icon);
+                $("<i>").css("background-image", "url(" + icon + ")").addClass("custom").appendTo($icon);
             }
 
             this.$element.css("display", "none");

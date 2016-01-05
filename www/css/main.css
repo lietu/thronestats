@@ -20,10 +20,12 @@ section {
   #popups .message .icon.custom {
     margin-top: -12px; }
   #popups .message .icon i.custom {
+    display: block;
     height: 48px;
     width: 48px;
     background-size: contain;
-    background-repeat: no-repeat; }
+    background-repeat: no-repeat;
+    background-position: center; }
 
 .ui.tabular.menu .item:not(.active) {
   background: #cecece;

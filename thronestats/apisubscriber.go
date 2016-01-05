@@ -26,7 +26,7 @@ func (as *ApiSubscriber) onWeaponPickup(weaponCode int) {
 	rate := as.statsContainer.GetWeaponRate(weaponCode, 1)
 	globalRate := GlobalStats.GetWeaponRate(weaponCode, 1)
 
-	header := fmt.Sprintf("%s!", weapon)
+	header := fmt.Sprintf("%s", weapon)
 	content := fmt.Sprintf("You pick up %s on %s of your runs. %s is picked up on %s of all runs.", weapon, rate, weapon, globalRate)
 	icon := GetWeaponIcon(weaponCode)
 
@@ -40,7 +40,7 @@ func (as *ApiSubscriber) onNewMutation(mutationCode int) {
 	rate := as.statsContainer.GetMutationRate(mutationCode, 1)
 	globalRate := GlobalStats.GetMutationRate(mutationCode, 1)
 
-	header := fmt.Sprintf("%s!", mutation)
+	header := fmt.Sprintf("%s", mutation)
 	content := fmt.Sprintf("You choose %s on %s of your runs. %s is chosen on %s of all runs.", mutation, rate, mutation, globalRate)
 	icon := GetMutationIcon(mutationCode)
 
@@ -59,7 +59,7 @@ func (as *ApiSubscriber) onNewCrown(crownCode int) {
 	rate := as.statsContainer.GetMutationRate(crownCode, 1)
 	globalRate := GlobalStats.GetMutationRate(crownCode, 1)
 
-	header := fmt.Sprintf("%s!", crown)
+	header := fmt.Sprintf("%s", crown)
 	content := fmt.Sprintf("You choose %s on %s of your runs. %s is chosen on %s of all runs.", crown, rate, crown, globalRate)
 	icon := GetCrownIcon(crownCode)
 
@@ -105,7 +105,7 @@ func (as *ApiSubscriber) onNewRun(rd *RunData) {
 	rate := as.statsContainer.GetCharacterRate(rd.Character, 1)
 	globalRate := GlobalStats.GetCharacterRate(rd.Character, 1)
 
-	header := fmt.Sprintf("New run with %s", character)
+	header := fmt.Sprintf("%s", character)
 	content := fmt.Sprintf("You use %s on %s of your runs. %s is used on %s of all runs.", character, rate, character, globalRate)
 	icon := GetCharacterIcon(rd.Character, rd.BSkin)
 

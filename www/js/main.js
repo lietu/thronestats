@@ -1061,6 +1061,11 @@ $(function () {
                                     })
                                 }
                             }
+
+                            this.stats[key].sort(function (a, b) {
+                                return b.runs - a.runs;
+                            });
+
                             break;
 
                         default:

@@ -183,7 +183,11 @@ func (as *ApiSubscriber) poll() {
 
 	response := ApiResponse{}
 
-	json.Unmarshal(body, &response)
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		log.Printf("JSON error decoding API response: %s", err)
+		return
+	}
 
 	data := response.ToRunData()
 	as.processUpdate(&data)

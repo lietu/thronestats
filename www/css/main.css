@@ -17,6 +17,10 @@ section {
   display: block;
   width: 100%;
   z-index: 9999; }
+  #popups .bigger .content {
+    font-size: 1.3rem; }
+    #popups .bigger .content .header {
+      font-size: 1.5rem; }
 
 .message .icon i.custom, td.icon i.custom {
   display: block;

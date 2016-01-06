@@ -25,6 +25,15 @@ section {
   display: block;
   width: 100%;
   z-index: 9999;
+
+  .bigger {
+    .content {
+      font-size: 1.3rem;
+      .header {
+        font-size: 1.5rem;
+      }
+    }
+  }
 }
 
 .message .icon, td.icon {

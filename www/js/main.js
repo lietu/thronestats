@@ -443,6 +443,10 @@ $(function () {
 
             this.$element = this.throneStats.$popupTemplate.clone();
 
+            if (this.throneStats.settings.overlaySize != "normal") {
+                this.$element.addClass(this.throneStats.settings.overlaySize);
+            }
+
             this.view = rivets.bind(this.$element, {
                 header: header,
                 content: content
@@ -498,6 +502,7 @@ $(function () {
                 streamKey: null,
                 popupLifetime: 15000,
                 dataEndpoint: "data",
+                overlaySize: "normal",
                 view: "information"
             };
 

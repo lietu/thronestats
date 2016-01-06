@@ -800,7 +800,7 @@ $(function () {
          */
         popup: throttle(function (header, content, lifetime, icon) {
             Popup.create(this, header, content, lifetime, icon);
-        }, 1500),
+        }, 3000),
 
         /**
          * Get overlay link -button.

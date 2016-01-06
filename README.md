@@ -26,8 +26,13 @@ You'll need Go installed in your environment, get it from [https://golang.org/dl
 
 Tested on Go 1.5.1.
 
-Go to the `cmd/thronestats/` -subfolder and run `go build`.
+Make sure you get all dependencies and then build it
 
+```
+go get github.com/lietu/thronestats/cmd/thronestats
+cd $GOPATH/src/github.com/lietu/thronestats/cmd/thronestats
+go build
+```
 
 ## Dependencies for WWW
 

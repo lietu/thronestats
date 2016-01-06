@@ -29,7 +29,7 @@ func GetWeaponIcon(weapon int) string {
 }
 
 func GetCrownIcon(crown int) string {
-	return fmt.Sprintf("img/crownChoices/%d.png", crown)
+	return fmt.Sprintf("img/crownChoices/%d.gif", crown)
 }
 
 func GetMutationIcon(mutation int) string {

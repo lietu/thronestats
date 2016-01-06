@@ -1018,7 +1018,7 @@ $(function () {
 
             var skip = {
                 "characters": ["", "0", "13", "14", "16"],
-                "causesOfDeath": [""],
+                "causesOfDeath": ["", "-1"],
                 "crownChoices": ["", "0", "1"],
                 "deathsByLevel": [""],
                 "mutationChoices": [""],

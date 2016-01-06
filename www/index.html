@@ -356,6 +356,21 @@
             </tbody>
         </table>
 
+        <h2 class="ui header">Causes of death</h2>
+        <table class="ui collapsing celled table">
+            <thead>
+                <tr><th></th><th>Enemy</th><th>Runs</th><th>%</th></tr>
+            </thead>
+            <tbody>
+                <tr rv-each-item="stats.causesOfDeath">
+                    <td class="icon"><i class="custom" rv-style="item.iconStyle"></i></td>
+                    <td rv-text="item.name"></td>
+                    <td rv-text="item.runs"></td>
+                    <td rv-text="item.percentage"></td>
+                </tr>
+            </tbody>
+        </table>
+
         <h2 class="ui header">Deaths</h2>
         <table class="ui collapsing celled table">
             <thead>

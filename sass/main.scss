@@ -27,6 +27,11 @@ section {
   z-index: 9999;
 
   .bigger {
+    i.custom {
+      height: 40px !important;
+      width: 40px !important;
+      margin-top: -4px;
+    }
     .content {
       font-size: 1.3rem;
       .header {

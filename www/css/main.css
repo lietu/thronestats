@@ -17,6 +17,10 @@ section {
   display: block;
   width: 100%;
   z-index: 9999; }
+  #popups .bigger i.custom {
+    height: 40px !important;
+    width: 40px !important;
+    margin-top: -4px; }
   #popups .bigger .content {
     font-size: 1.3rem; }
     #popups .bigger .content .header {

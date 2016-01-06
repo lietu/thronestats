@@ -5,6 +5,7 @@ Generate the graphics assets for ../www/img/ -folders.
 import re
 import os
 import sys
+import shutil
 import subprocess
 from pathlib import Path
 from pprint import pprint
@@ -14,11 +15,19 @@ TEST_TEMPLATE = """
 <head>
 <style>
 i {{
-    display: block;
-    height: 48px;
-    width: 48px;
-    background-size: contain;
-    background-repeat: no-repeat;
+  display: block;
+  height: 32px;
+  width: 32px;
+  image-rendering: optimizeSpeed;             /* Legal fallback */
+  image-rendering: -moz-crisp-edges;          /* Firefox        */
+  image-rendering: -o-crisp-edges;            /* Opera          */
+  image-rendering: -webkit-optimize-contrast; /* Safari         */
+  image-rendering: optimize-contrast;         /* CSS3 Proposed  */
+  image-rendering: crisp-edges;               /* CSS4 Proposed  */
+  image-rendering: pixelated;                 /* CSS4 Proposed  */
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }}
 </style>
 </head>
@@ -369,7 +378,7 @@ class Entry(object):
 
         return width, height, frames
 
-    def make_gif(self):
+    def make_gif(self, loop=0):
         dst = self.get_destination()
 
         width, height, frames = self.get_dimensions()
@@ -383,10 +392,22 @@ class Entry(object):
             "{}/sprite-%02d.png".format(TEMPDIR)
         ]))
 
+        # Copy first frame as last frame if we're not supposed to loop
+        if loop > 0:
+            last = 0
+            for file in os.listdir(TEMPDIR):
+                last = max(last, int(file[-7:][2]))
+
+            new_last_file = "sprite-{:0>2d}.png".format(last + 1)
+
+            tmp = Path(TEMPDIR)
+
+            shutil.copy(str(tmp / "sprite-00.png"), str(tmp / new_last_file))
+
         os.system(" ".join([
             "convert",
             "-delay", "8",
-            "-loop", "0",
+            "-loop", str(loop),
             "-dispose", "previous",
             "{}/sprite-*.png".format(TEMPDIR),
             "-delete", "30-1",
@@ -520,7 +541,10 @@ def generate_resources(sources):
             if not entry.source:
                 continue
 
-            entry.make_gif()
+            if type == "weaponChoices":
+                entry.make_gif(loop=1)
+            else:
+                entry.make_gif()
 
 
 def generate_tests(src):

@@ -25,35 +25,35 @@ section {
   display: block;
   width: 100%;
   z-index: 9999;
+}
 
-  .message .icon {
-    i.custom {
-      display: block;
-      height: 32px;
-      width: 32px;
-      image-rendering: optimizeSpeed;             /* Legal fallback */
-      image-rendering: -moz-crisp-edges;          /* Firefox        */
-      image-rendering: -o-crisp-edges;            /* Opera          */
-      image-rendering: -webkit-optimize-contrast; /* Safari         */
-      image-rendering: optimize-contrast;         /* CSS3 Proposed  */
-      image-rendering: crisp-edges;               /* CSS4 Proposed  */
-      image-rendering: pixelated;                 /* CSS4 Proposed  */
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-    }
+.message .icon, td.icon {
+  i.custom {
+    display: block;
+    height: 32px;
+    width: 32px;
+    image-rendering: optimizeSpeed; /* Legal fallback */
+    image-rendering: -moz-crisp-edges; /* Firefox        */
+    image-rendering: -o-crisp-edges; /* Opera          */
+    image-rendering: -webkit-optimize-contrast; /* Safari         */
+    image-rendering: optimize-contrast; /* CSS3 Proposed  */
+    image-rendering: crisp-edges; /* CSS4 Proposed  */
+    image-rendering: pixelated; /* CSS4 Proposed  */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
   }
 }
 
 .ui.tabular.menu .item:not(.active) {
-    background: #cecece;
-    color: rgba(0,0,0,.95);
-    border-top-width: 1px;
-    border-color: #8b8b8c;
-    font-weight: 700;
-    margin-bottom: -1px;
-    box-shadow: none;
-    border-radius: .28571429rem .28571429rem 0 0!important;
+  background: #cecece;
+  color: rgba(0, 0, 0, .95);
+  border-top-width: 1px;
+  border-color: #8b8b8c;
+  font-weight: 700;
+  margin-bottom: -1px;
+  box-shadow: none;
+  border-radius: .28571429rem .28571429rem 0 0 !important;
 }
 
 #content {

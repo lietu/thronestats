@@ -1046,7 +1046,15 @@ $(function () {
                                         name = NAMES[key][item];
                                     }
 
+                                    var iconUrl = "img/" + key + "/" + String(item) + ".gif";
+                                    if (key == "characters") {
+                                        iconUrl = "img/" + key + "/sprMutant" + String(item) + "Idle.gif";
+                                    } else if (key == "mutationChoices") {
+                                        iconUrl = "img/" + key + "/" + String(item) + ".png";
+                                    }
+
                                     this.stats[key].push({
+                                        iconStyle: "background-image: url(" + iconUrl + ");",
                                         name: name,
                                         runs: data[key][item],
                                         percentage: this.getPercentage(data.runs, data[key][item])

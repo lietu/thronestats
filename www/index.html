@@ -299,10 +299,11 @@
         <h2 class="ui header">Characters</h2>
         <table class="ui collapsing celled table">
             <thead>
-                <tr><th>Character</th><th>Runs</th><th>%</th></tr>
+                <tr><th></th><th>Character</th><th>Runs</th><th>%</th></tr>
             </thead>
             <tbody>
                 <tr rv-each-item="stats.characters">
+                    <td class="icon"><i class="custom" rv-style="item.iconStyle"></i></td>
                     <td rv-text="item.name"></td>
                     <td rv-text="item.runs"></td>
                     <td rv-text="item.percentage"></td>
@@ -313,10 +314,11 @@
         <h2 class="ui header">Mutations</h2>
         <table class="ui collapsing celled table">
             <thead>
-                <tr><th>Mutation</th><th>Runs</th><th>%</th></tr>
+                <tr><th></th><th>Mutation</th><th>Runs</th><th>%</th></tr>
             </thead>
             <tbody>
                 <tr rv-each-item="stats.mutationChoices">
+                    <td class="icon"><i class="custom" rv-style="item.iconStyle"></i></td>
                     <td rv-text="item.name"></td>
                     <td rv-text="item.runs"></td>
                     <td rv-text="item.percentage"></td>
@@ -327,10 +329,11 @@
         <h2 class="ui header">Crowns</h2>
         <table class="ui collapsing celled table">
             <thead>
-                <tr><th>Crown</th><th>Runs</th><th>%</th></tr>
+                <tr><th></th><th>Crown</th><th>Runs</th><th>%</th></tr>
             </thead>
             <tbody>
                 <tr rv-each-item="stats.crownChoices">
+                    <td class="icon"><i class="custom" rv-style="item.iconStyle"></i></td>
                     <td rv-text="item.name"></td>
                     <td rv-text="item.runs"></td>
                     <td rv-text="item.percentage"></td>
@@ -341,10 +344,11 @@
         <h2 class="ui header">Weapons</h2>
         <table class="ui collapsing celled table">
             <thead>
-                <tr><th>Weapon</th><th>Runs</th><th>%</th></tr>
+                <tr><th></th><th>Weapon</th><th>Runs</th><th>%</th></tr>
             </thead>
             <tbody>
                 <tr rv-each-item="stats.weaponChoices">
+                    <td class="icon"><i class="custom" rv-style="item.iconStyle"></i></td>
                     <td rv-text="item.name"></td>
                     <td rv-text="item.runs"></td>
                     <td rv-text="item.percentage"></td>

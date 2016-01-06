@@ -39,6 +39,32 @@ section {
       }
     }
   }
+  .bigger2 {
+    i.custom {
+      height: 48px !important;
+      width: 48px !important;
+      margin-top: -4px;
+    }
+    .content {
+      font-size: 1.5rem;
+      .header {
+        font-size: 1.7rem;
+      }
+    }
+  }
+  .bigger3 {
+    i.custom {
+      height: 56px !important;
+      width: 56px !important;
+      margin-top: -4px;
+    }
+    .content {
+      font-size: 1.8rem;
+      .header {
+        font-size: 2rem;
+      }
+    }
+  }
 }
 
 .message .icon, td.icon {

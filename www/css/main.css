@@ -25,6 +25,22 @@ section {
     font-size: 1.3rem; }
     #popups .bigger .content .header {
       font-size: 1.5rem; }
+  #popups .bigger2 i.custom {
+    height: 48px !important;
+    width: 48px !important;
+    margin-top: -4px; }
+  #popups .bigger2 .content {
+    font-size: 1.5rem; }
+    #popups .bigger2 .content .header {
+      font-size: 1.7rem; }
+  #popups .bigger3 i.custom {
+    height: 56px !important;
+    width: 56px !important;
+    margin-top: -4px; }
+  #popups .bigger3 .content {
+    font-size: 1.8rem; }
+    #popups .bigger3 .content .header {
+      font-size: 2rem; }
 
 .message .icon i.custom, td.icon i.custom {
   display: block;

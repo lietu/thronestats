@@ -264,7 +264,7 @@ DATA = {
         103: "Gold A Rifle",
         104: "Super Disc Gun",
         105: "Heavy Auto Crossbow",
-        106: "Heavy Assault Rifle",
+        106: "Heavy A Rifle",
         107: "Blood Cannon",
         108: "Dog Spin Attack",
         109: "Scrap Boss Missile Idle",

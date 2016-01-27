@@ -6,16 +6,33 @@ import (
 
 var DEFAULT_CHARACTER = -1
 var DEFAULT_CROWN = -1
+var DEFAULT_ULTRA = 0
 var DEFAULT_ENEMY = -1
 
 type RunStats struct {
 	character    int
 	causeOfDeath int
 	lastCrown    int
+	lastUltra	 int
 	diedOnLevel  string
 	weapons      []int
 	mutations    []int
 	crowns       []int
+}
+
+func NewRunStats() *RunStats {
+	rs := RunStats{
+		DEFAULT_CHARACTER,
+		DEFAULT_ENEMY,
+		DEFAULT_CROWN,
+		DEFAULT_ULTRA,
+		"",
+		[]int{},
+		[]int{},
+		[]int{},
+	}
+
+	return &rs
 }
 
 func (rs *RunStats) WeaponPickup(weapon int) bool {
@@ -63,6 +80,16 @@ func (rs *RunStats) CrownChoice(crown int) bool {
 	return true
 }
 
+func (rs *RunStats) UltraChoice(ultra int) bool {
+	if ultra == 0 || ultra == rs.lastUltra {
+		return false
+	}
+
+	rs.lastUltra = ultra
+
+	return true
+}
+
 func (rs *RunStats) Killed(causeOfDeath int, diedOnLevel string) {
 	rs.causeOfDeath = causeOfDeath
 	rs.diedOnLevel = diedOnLevel
@@ -92,6 +119,7 @@ func (rs *RunStats) UpdateStatsContainer(sc *StatsContainer) {
 	}
 
 	sc.Characters[strconv.Itoa(rs.character)] += 1
+	sc.UltraChoices[strconv.Itoa(rs.character)][strconv.Itoa(rs.lastUltra)] += 1
 
 	for _, mutation := range rs.mutations {
 		sc.MutationChoices[strconv.Itoa(mutation)] += 1
@@ -115,21 +143,8 @@ func (rs *RunStats) Reset() {
 	rs.causeOfDeath = -1
 	rs.diedOnLevel = ""
 	rs.lastCrown = 1
+	rs.lastUltra = 0
 	rs.weapons = []int{}
 	rs.mutations = []int{}
 	rs.crowns = []int{}
-}
-
-func NewRunStats() *RunStats {
-	rs := RunStats{
-		DEFAULT_CHARACTER,
-		DEFAULT_ENEMY,
-		DEFAULT_CROWN,
-		"",
-		[]int{},
-		[]int{},
-		[]int{},
-	}
-
-	return &rs
 }

@@ -13,17 +13,36 @@ type RunData struct {
 	Crown         int
 	Mutations     []int
 	Weapons       []int
-	RunTime       int
+	Timestamp     int
 	Kills         int
-	IsDaily       bool
-	IsWeekly      bool
-	Ultra         bool
+	Ultra         int
 	LastDamagedBy int
 
 	Area          int
 	World         int
 	Loop          int
 	Level         string
+}
+
+func NewRunData() *RunData {
+	rd := RunData{
+		0,
+		false,
+		0,
+		0,
+		[]int{},
+		[]int{},
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		"",
+	}
+
+	return &rd
 }
 
 func parseMutations(mutationText string) []int {
@@ -59,45 +78,44 @@ func parseWeapons(weapon1 int, weapon2 int) []int {
 }
 
 func (rd *RunData) ReadFromApiResponse(ar *ApiResponse) {
-	rd.Health = ToInt(ar.Health)
-	rd.BSkin = (ar.BSkin == "1")
-	rd.Character = ToInt(ar.Character)
-	rd.Crown = ToInt(ar.Crown)
-	rd.Mutations = parseMutations(ar.Mutations)
-	rd.Weapons = parseWeapons(ToInt(ar.Weapon1), ToInt(ar.Weapon2))
-	rd.RunTime = ToInt(ar.RunTime)
-	rd.Kills = ToInt(ar.Kills)
-	rd.IsDaily = (ar.IsDaily == "1")
-	rd.IsWeekly = (ar.IsWeekly == "1")
-	rd.Ultra = (ar.Ultra == "1")
-	rd.LastDamagedBy = ToInt(ar.LastDamagedBy)
+	arr := ar.Current
 
-	rd.Area = ToInt(ar.Area)
-	rd.World = ToInt(ar.World)
-	rd.Loop = ToInt(ar.Loop)
+	rd.Health = ToInt(arr.Health)
+	rd.BSkin = (arr.BSkin == 1)
+	rd.Character = arr.Character
+	rd.Crown = arr.Crown
+	rd.Mutations = parseMutations(arr.Mutations)
+	rd.Weapons = parseWeapons(arr.Weapon1, arr.Weapon2)
+	rd.Timestamp = arr.Timestamp
+	rd.Kills = ToInt(arr.Kills)
+	rd.Ultra = arr.Ultra
+	rd.LastDamagedBy = arr.LastDamagedBy
+
+	rd.Area = arr.Area
+	rd.World = arr.World
+	rd.Loop = arr.Loop
 
 	rd.Level = fmt.Sprintf("L%d %d-%d", rd.Loop, rd.World, rd.Area)
 }
 
-func NewRunData() *RunData {
-	rd := RunData{
-		0,
-		false,
-		0,
-		0,
-		[]int{},
-		[]int{},
-		0,
-		0,
-		false,
-		false,
-		false,
-		0,
-		0,
-		0,
-		0,
-		"",
+func (rd *RunData) Print() {
+	fmt.Printf("Character: %d\n", rd.Character)
+	fmt.Printf("LastDamagedBy: %d\n", rd.LastDamagedBy)
+	fmt.Printf("Level: %s\n", rd.Level)
+	fmt.Printf("Crown: %d\n", rd.Crown)
+	weapons := ""
+	for _, id := range rd.Weapons {
+		weapons = fmt.Sprintf("%s%d, ", weapons, id)
 	}
-
-	return &rd
+	fmt.Printf("Weapons: %s\n", weapons)
+	fmt.Printf("BSkin: %t\n", rd.BSkin)
+	fmt.Printf("Ultra: %d\n", rd.Ultra)
+	mutations := ""
+	for _, id := range rd.Mutations {
+		mutations = fmt.Sprintf("%s%d, ", mutations, id)
+	}
+	fmt.Printf("Mutations: %s\n", mutations)
+	fmt.Printf("Kills: %d\n", rd.Kills)
+	fmt.Printf("Health: %d\n", rd.Health)
+	fmt.Printf("Timestamp: %d\n", rd.Timestamp)
 }

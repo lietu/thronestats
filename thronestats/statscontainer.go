@@ -12,26 +12,27 @@ import (
 var GlobalStats *StatsContainer
 
 type StatsContainer struct {
-	SteamId64              string           `json:"-"`
-	Loaded                 bool             `json:"-"`
-	Running                bool             `json:"-"`
-	RunStats               RunStats         `json:"-"`
-	Runs                   int              `json:"runs"`
+	SteamId64              string                      `json:"-"`
+	Loaded                 bool                        `json:"-"`
+	Running                bool                        `json:"-"`
+	RunStats               RunStats                    `json:"-"`
+	Runs                   int                         `json:"runs"`
 
-	Characters             map[string]int   `json:"characters"`
-	CausesOfDeath          map[string]int   `json:"causesOfDeath"`
-	MutationChoices        map[string]int   `json:"mutationChoices"`
-	WeaponChoices          map[string]int   `json:"weaponChoices"`
-	CrownChoices           map[string]int   `json:"crownChoices"`
+	Characters             map[string]int              `json:"characters"`
+	CausesOfDeath          map[string]int              `json:"causesOfDeath"`
+	MutationChoices        map[string]int              `json:"mutationChoices"`
+	WeaponChoices          map[string]int              `json:"weaponChoices"`
+	CrownChoices           map[string]int              `json:"crownChoices"`
+	UltraChoices           map[string]map[string]int   `json:"ultraChoices"`
 
-	DeathsByLevel          map[string]int   `json:"deathsByLevel"`
+	DeathsByLevel          map[string]int              `json:"deathsByLevel"`
 
-	MostPopularWeapon      string           `json:"mostPopularWeapon"`
-	MostCommonCauseOfDeath string           `json:"mostCommonCauseOfDeath"`
-	MostPopularMutation    string           `json:"mostPopularMutation"`
-	MostPopularCrown       string           `json:"mostPopularCrown"`
-	MostPopularCharacter   string           `json:"mostPopularCharacter"`
-	MostCommonDeathLevel   string           `json:"mostCommonDeathLevel"`
+	MostPopularWeapon      string                      `json:"mostPopularWeapon"`
+	MostCommonCauseOfDeath string                      `json:"mostCommonCauseOfDeath"`
+	MostPopularMutation    string                      `json:"mostPopularMutation"`
+	MostPopularCrown       string                      `json:"mostPopularCrown"`
+	MostPopularCharacter   string                      `json:"mostPopularCharacter"`
+	MostCommonDeathLevel   string                      `json:"mostCommonDeathLevel"`
 }
 
 func (sc *StatsContainer) getFilename() string {
@@ -57,6 +58,10 @@ func (sc *StatsContainer) getRate(runs int, currentRun bool) string {
 	if currentRun {
 		total += 1
 	}
+	return sc.getRateOfTotal(runs, total)
+}
+
+func (sc *StatsContainer) getRateOfTotal(runs int, total int) string {
 	return fmt.Sprintf("%.2f%%", (float64(runs) / float64(total)) * 100)
 }
 
@@ -68,8 +73,17 @@ func (sc *StatsContainer) GetMutationRate(mutation int, extra int) string {
 	return sc.getRate(sc.MutationChoices[strconv.Itoa(mutation)] + extra, extra == 1)
 }
 
+func (sc *StatsContainer) GetUltraRate(character int, ultra int, extra int) string {
+	runs := sc.UltraChoices[strconv.Itoa(character)][strconv.Itoa(ultra)]
+	runs += extra
+
+	total := sc.Characters[strconv.Itoa(character)] + extra
+
+	return sc.getRateOfTotal(runs, total)
+}
+
 func (sc *StatsContainer) GetCharacterRate(character int, extra int) string {
-	return sc.getRate(sc.WeaponChoices[strconv.Itoa(character)] + extra, extra == 1)
+	return sc.getRate(sc.Characters[strconv.Itoa(character)] + extra, extra == 1)
 }
 
 func (sc *StatsContainer) GetWeaponRate(weapon int, extra int) string {
@@ -155,9 +169,21 @@ func NewStatsContainer(steamId64 string) *StatsContainer {
 	mutationChoices := map[string]int{}
 	weaponChoices := map[string]int{}
 	crowns := map[string]int{}
+	ultras := map[string]map[string]int{}
 
 	for key, _ := range Characters {
-		characters[strconv.Itoa(key)] = 0
+		skey := strconv.Itoa(key)
+		characters[skey] = 0
+
+		count := 2
+		if key == 11 {
+			count = 3
+		}
+
+		ultras[skey] = map[string]int{}
+		for i := 0; i <= count; i++ {
+			ultras[skey][strconv.Itoa(i)] = 0
+		}
 	}
 
 	for key, _ := range Enemies {
@@ -187,6 +213,7 @@ func NewStatsContainer(steamId64 string) *StatsContainer {
 		mutationChoices,
 		weaponChoices,
 		crowns,
+		ultras,
 		map[string]int{},
 		"",
 		"",

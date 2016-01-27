@@ -1,22 +1,29 @@
 package thronestats
 
+type ApiResponseRun struct {
+	Character     int     `json:"char"`
+	LastDamagedBy int     `json:"lasthit"`
+	World         int     `json:"world"`
+	Area          int     `json:"level"`
+	Crown         int     `json:"crown"`
+	Weapon1       int     `json:"wepA"`
+	Weapon2       int     `json:"wepB"`
+	BSkin         int     `json:"skin"`
+	Ultra         int     `json:"ultra"`
+	CharacterLvl  int     `json:"charlvl"`
+	Loop          int     `json:"loops"`
+	Win           int     `json:"win"`
+	Mutations     string  `json:"mutations"`
+	Kills         string  `json:"kills"`
+	Health        string  `json:"health"`
+	SteamId       int     `json:"steamid"`
+	Type          string  `json:"type"`
+	Timestamp     int     `json:"timestamp"`
+}
+
 type ApiResponse struct {
-	Health        string		`json:"heal"`
-	BSkin         string        `json:"bskn"`
-	Character     string        `json:"char"`
-	Mutations     string        `json:"muts"`
-	Area          string        `json:"area"`
-	Crown         string        `json:"crow"`
-	World         string        `json:"worl"`
-	Loop          string        `json:"loop"`
-	Weapon1       string        `json:"wep1"`
-	Weapon2       string        `json:"wep2"`
-	RunTime       string        `json:"time"`
-	Kills         string        `json:"kill"`
-	IsDaily       string        `json:"dail"`
-	IsWeekly      string        `json:"week"`
-	Ultra         string        `json:"ultr"`
-	LastDamagedBy string    	`json:"dead"`
+	Current  ApiResponseRun  `json:"current"`
+	Previous ApiResponseRun  `json:"previous"`
 }
 
 func (ar ApiResponse) ToRunData() RunData {

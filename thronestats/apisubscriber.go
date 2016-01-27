@@ -2,6 +2,7 @@ package thronestats
 
 import (
 	"fmt"
+	"errors"
 	"time"
 	"io/ioutil"
 	"log"
@@ -51,6 +52,17 @@ func (as *ApiSubscriber) onNewMutation(mutationCode int) {
 
 func (as *ApiSubscriber) onNewUltra(character int, ultra int) {
 	characterText := Characters[as.runData.Character]
+
+	ultraText := Ultras[character][ultra]
+	rate := as.statsContainer.GetUltraRate(character, ultra, 1)
+	globalRate := GlobalStats.GetUltraRate(character, ultra, 1)
+
+	header := "Level Ultra"
+	content := fmt.Sprintf("You choose %s on %s of your %s runs. %s is chosen on %s of all %s runs.", ultraText, rate, characterText, ultraText, globalRate, characterText)
+	icon := GetUltraIcon(character, ultra)
+
+	as.SendMessage(header, content, icon)
+
 	log.Printf("Player %s got %s ultra %d", as.SteamId64, characterText, ultra)
 }
 
@@ -136,6 +148,9 @@ func (as *ApiSubscriber) processUpdate(rd *RunData) {
 			as.onNewCrown(rd.Crown)
 		}
 
+		if as.statsContainer.RunStats.UltraChoice(rd.Ultra) {
+			as.onNewUltra(rd.Character, rd.Ultra)
+		}
 
 		// Reached new level
 		if as.runData.Level != rd.Level {
@@ -143,7 +158,7 @@ func (as *ApiSubscriber) processUpdate(rd *RunData) {
 		}
 
 		// Has the player died?
-		if as.runData.RunTime > rd.RunTime {
+		if as.runData.Timestamp != rd.Timestamp {
 			as.onDeath()
 			as.onNewRun(rd)
 		}
@@ -153,14 +168,59 @@ func (as *ApiSubscriber) processUpdate(rd *RunData) {
 	as.runData = rd
 }
 
-func (as *ApiSubscriber) poll() {
-	url := fmt.Sprintf("http://nuclearthrone.com/data/players/data/%s%s.cur", as.SteamId64, as.StreamKey)
+func (as *ApiSubscriber) getData() ([]byte, error) {
+	url := fmt.Sprintf("https://tb-api.xyz/stream/get?s=%s&key=%s", as.SteamId64, as.StreamKey)
+
+	println(url)
+
+	return []byte(`{
+	"current": {
+		"char": 4,
+		"lasthit": 0,
+		"world": 1,
+		"level": 1,
+		"crown": 1,
+		"wepA": 7,
+		"wepB": 1,
+		"skin": 0,
+		"ultra": 0,
+		"charlvl": 1,
+		"loops": 0,
+		"win": 1,
+		"mutations": "00000000000000000000000000000",
+		"kills": "7",
+		"health": "2",
+		"steamid": 76561198041183122,
+		"type": "normal",
+		"timestamp": 1453851966
+	},
+	"previous": {
+		"char": 4,
+		"lasthit": 17,
+		"world": 3,
+		"level": 1,
+		"crown": 1,
+		"wepA": 6,
+		"wepB": 19,
+		"skin": 0,
+		"ultra": 0,
+		"charlvl": 4,
+		"loops": 0,
+		"win": 1,
+		"mutations": "00000100010000000000010000000",
+		"kills": "90",
+		"health": "0",
+		"steamid": 76561198041183122,
+		"type": "normal",
+		"timestamp": 1453851783
+	}
+}`), nil
 
 	resp, err := http.Get(url)
 
 	if err != nil {
 		log.Printf("API error: %s", err)
-		return
+		return nil, errors.New("API error")
 	}
 
 	defer resp.Body.Close()
@@ -169,8 +229,11 @@ func (as *ApiSubscriber) poll() {
 
 	if err != nil {
 		log.Printf("Error reading API response: %s", err)
-		return
+		return nil, errors.New("API error")
 	}
+
+	log.Printf(url)
+	log.Printf(string(body[:]))
 
 	if strings.Contains(string(body[:]), "<html>") {
 		if as.invalidSettings == false {
@@ -178,8 +241,14 @@ func (as *ApiSubscriber) poll() {
 			as.SendMessage("Invalid settings?", msg, "")
 			as.invalidSettings = true
 		}
-		return
+		return nil, errors.New("API error")
 	}
+
+	return body, nil
+}
+
+func (as *ApiSubscriber) poll() {
+	body, err := as.getData()
 
 	response := ApiResponse{}
 

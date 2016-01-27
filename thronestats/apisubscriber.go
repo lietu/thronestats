@@ -82,30 +82,28 @@ func (as *ApiSubscriber) onNewCrown(crownCode int) {
 	log.Printf("Player %s chose %s", as.SteamId64, crown)
 }
 
-func (as *ApiSubscriber) onDeath() {
-	as.statsContainer.RunStats.Killed(as.runData.LastDamagedBy, as.runData.Level)
+func (as *ApiSubscriber) onDeath(rd *RunData) {
+	as.statsContainer.RunStats.Killed(rd.LastDamagedBy, rd.Level)
 	as.statsContainer.EndRun()
 
-
-	enemy := Enemies[as.runData.LastDamagedBy]
-	rate := as.statsContainer.GetCauseOfDeathRate(as.runData.LastDamagedBy)
-	globalRate := GlobalStats.GetCauseOfDeathRate(as.runData.LastDamagedBy)
+	enemy := Enemies[rd.LastDamagedBy]
+	rate := as.statsContainer.GetCauseOfDeathRate(rd.LastDamagedBy)
+	globalRate := GlobalStats.GetCauseOfDeathRate(rd.LastDamagedBy)
 
 	header := fmt.Sprintf("%s", enemy)
 	content := fmt.Sprintf("You die to %s on %s of your runs. %s ends %s of all runs.", enemy, rate, enemy, globalRate)
-	icon := GetEnemyIcon(as.runData.LastDamagedBy)
+	icon := GetEnemyIcon(rd.LastDamagedBy)
 
 	as.SendMessage(header, content, icon)
 
-
-	level := as.runData.Level
+	level := rd.Level
 
 	rate = as.statsContainer.GetLevelDeathRate(level)
 	globalRate = GlobalStats.GetLevelDeathRate(level)
 
-	header = fmt.Sprintf("Died on %s", as.runData.Level)
+	header = fmt.Sprintf("Died on %s", rd.Level)
 	content = fmt.Sprintf("You die on %s on %s of your runs.  %s of all runs end at %s.", level, rate, globalRate, level)
-	icon = GetCharacterIcon(as.runData.Character, as.runData.BSkin)
+	icon = GetCharacterIcon(rd.Character, rd.BSkin)
 
 	as.SendMessage(header, content, icon)
 
@@ -132,42 +130,55 @@ func (as *ApiSubscriber) onNewLevel(rd *RunData) {
 	log.Printf("Player %s entered level %s", as.SteamId64, rd.Level)
 }
 
-func (as *ApiSubscriber) processUpdate(rd *RunData) {
+func (as *ApiSubscriber) processUpdate(rdc *RunDataContainer) {
 	if as.statsContainer.Running {
-		for _, v := range rd.Weapons {
-			if as.statsContainer.RunStats.WeaponPickup(v) {
-				as.onWeaponPickup(v)
+		current := rdc.Current
+		previous := rdc.Previous
+
+		// If we have a current run
+		if (rdc.Current.Timestamp > 0) {
+
+			if (as.runData.Timestamp != current.Timestamp) {
+				as.onNewRun(current)
 			}
-		}
 
-		for _, v := range rd.Mutations {
-			if as.statsContainer.RunStats.MutationChoice(v) {
-				as.onNewMutation(v)
+			for _, v := range current.Weapons {
+				if as.statsContainer.RunStats.WeaponPickup(v) {
+					as.onWeaponPickup(v)
+				}
 			}
-		}
 
-		if as.statsContainer.RunStats.CrownChoice(rd.Crown) {
-			as.onNewCrown(rd.Crown)
-		}
+			for _, v := range current.Mutations {
+				if as.statsContainer.RunStats.MutationChoice(v) {
+					as.onNewMutation(v)
+				}
+			}
 
-		if as.statsContainer.RunStats.UltraChoice(rd.Ultra) {
-			as.onNewUltra(rd.Character, rd.Ultra)
-		}
+			if as.statsContainer.RunStats.CrownChoice(current.Crown) {
+				as.onNewCrown(current.Crown)
+			}
 
-		// Reached new level
-		if as.runData.Level != rd.Level {
-			as.onNewLevel(rd)
+			if as.statsContainer.RunStats.UltraChoice(current.Ultra) {
+				as.onNewUltra(current.Character, current.Ultra)
+			}
+
+			// Reached new level
+			if as.runData.Level != current.Level {
+				as.onNewLevel(current)
+			}
 		}
 
 		// Has the player died?
-		if as.runData.Timestamp != rd.Timestamp {
-			as.onDeath()
-			as.onNewRun(rd)
+		if (previous.Timestamp == as.runData.Timestamp) {
+			as.onDeath(previous)
+			as.runData.Timestamp = 0
 		}
 	}
 
-	as.statsContainer.Running = true
-	as.runData = rd
+	if (rdc.Current.Timestamp > 0) {
+		as.statsContainer.Running = true
+		as.runData = rdc.Current
+	}
 }
 
 func (as *ApiSubscriber) getData() ([]byte, error) {
@@ -189,10 +200,16 @@ func (as *ApiSubscriber) getData() ([]byte, error) {
 		return nil, errors.New("API error")
 	}
 
-	log.Printf(url)
-	log.Printf(string(body[:]))
+	invalidSettings := false
+	if resp.StatusCode != 200 {
+		invalidSettings = true
+	}
 
 	if strings.Contains(string(body[:]), "<html>") {
+		invalidSettings = true
+	}
+
+	if invalidSettings {
 		if as.invalidSettings == false {
 			msg := fmt.Sprintf("Could not get data with the provided Steam ID and Stream Key. Have you done any runs that would've gotten recorded?")
 			as.SendMessage("Invalid settings?", msg, "")
@@ -207,16 +224,21 @@ func (as *ApiSubscriber) getData() ([]byte, error) {
 func (as *ApiSubscriber) poll() {
 	body, err := as.getData()
 
-	response := ApiResponse{}
+	if err != nil {
+		return
+	}
+
+	response := NewApiResponse()
 
 	err = json.Unmarshal(body, &response)
 	if err != nil {
 		log.Printf("JSON error decoding API response: %s", err)
+		log.Printf("%s", string(body[:]))
 		return
 	}
 
 	data := response.ToRunData()
-	as.processUpdate(&data)
+	as.processUpdate(data)
 }
 
 func (as *ApiSubscriber) run() {

@@ -22,12 +22,46 @@ type ApiResponseRun struct {
 }
 
 type ApiResponse struct {
-	Current  ApiResponseRun  `json:"current"`
-	Previous ApiResponseRun  `json:"previous"`
+	Current  *ApiResponseRun  `json:"current"`
+	Previous *ApiResponseRun  `json:"previous"`
 }
 
-func (ar ApiResponse) ToRunData() RunData {
-	rd := RunData{}
-	rd.ReadFromApiResponse(&ar)
-	return rd
+func NewApiResponseRun() *ApiResponseRun {
+	arr := ApiResponseRun{
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		false,
+		"",
+		0,
+		0,
+		0,
+		"",
+		0,
+	}
+
+	return &arr
+}
+
+func NewApiResponse() *ApiResponse {
+	ar := ApiResponse{
+		NewApiResponseRun(),
+		NewApiResponseRun(),
+	}
+
+	return &ar
+}
+
+func (ar *ApiResponse) ToRunData() *RunDataContainer {
+	rdc := NewRunDataContainer()
+	rdc.ReadFromApiResponse(ar)
+	return rdc
 }

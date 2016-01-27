@@ -45,6 +45,20 @@ func NewRunData() *RunData {
 	return &rd
 }
 
+type RunDataContainer struct {
+	Current *RunData
+	Previous *RunData
+}
+
+func NewRunDataContainer() *RunDataContainer {
+	rdc := RunDataContainer{
+		NewRunData(),
+		NewRunData(),
+	}
+
+	return &rdc
+}
+
 func parseMutations(mutationText string) []int {
 	mutations := []int{}
 
@@ -77,9 +91,7 @@ func parseWeapons(weapon1 int, weapon2 int) []int {
 	return []int{}
 }
 
-func (rd *RunData) ReadFromApiResponse(ar *ApiResponse) {
-	arr := ar.Current
-
+func (rd *RunData) ReadFromApiResponseRun(arr *ApiResponseRun) {
 	rd.Health = arr.Health
 	rd.BSkin = (arr.BSkin == 1)
 	rd.Character = arr.Character
@@ -96,6 +108,15 @@ func (rd *RunData) ReadFromApiResponse(ar *ApiResponse) {
 	rd.Loop = arr.Loop
 
 	rd.Level = fmt.Sprintf("L%d %d-%d", rd.Loop, rd.World, rd.Area)
+}
+
+func (rdc *RunDataContainer) ReadFromApiResponse(ar *ApiResponse) {
+	if ar.Current != nil {
+		rdc.Current.ReadFromApiResponseRun(ar.Current)
+	}
+	if ar.Previous != nil {
+		rdc.Previous.ReadFromApiResponseRun(ar.Previous)
+	}
 }
 
 func (rd *RunData) Print() {

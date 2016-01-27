@@ -131,17 +131,21 @@ func (as *ApiSubscriber) onNewLevel(rd *RunData) {
 }
 
 func (as *ApiSubscriber) processUpdate(rdc *RunDataContainer) {
-	if as.statsContainer.Running {
-		current := rdc.Current
-		previous := rdc.Previous
+	current := rdc.Current
+	previous := rdc.Previous
 
-		// If we have a current run
-		if (rdc.Current.Timestamp > 0) {
+	// Has the player died?
+	if (previous.Timestamp == as.runData.Timestamp) {
+		as.onDeath(previous)
+		as.runData.Timestamp = 0
+	}
 
-			if (as.runData.Timestamp != current.Timestamp) {
-				as.onNewRun(current)
-			}
-
+	// If we have a current run
+	if (rdc.Current.Timestamp > 0) {
+		if (as.statsContainer.Running == false) {
+			as.onNewRun(current)
+			as.statsContainer.Running = true
+		} else {
 			for _, v := range current.Weapons {
 				if as.statsContainer.RunStats.WeaponPickup(v) {
 					as.onWeaponPickup(v)
@@ -168,16 +172,9 @@ func (as *ApiSubscriber) processUpdate(rdc *RunDataContainer) {
 			}
 		}
 
-		// Has the player died?
-		if (previous.Timestamp == as.runData.Timestamp) {
-			as.onDeath(previous)
-			as.runData.Timestamp = 0
-		}
-	}
-
-	if (rdc.Current.Timestamp > 0) {
-		as.statsContainer.Running = true
 		as.runData = rdc.Current
+	} else {
+		as.statsContainer.Running = false
 	}
 }
 

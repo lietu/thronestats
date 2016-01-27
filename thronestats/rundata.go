@@ -80,14 +80,14 @@ func parseWeapons(weapon1 int, weapon2 int) []int {
 func (rd *RunData) ReadFromApiResponse(ar *ApiResponse) {
 	arr := ar.Current
 
-	rd.Health = ToInt(arr.Health)
+	rd.Health = arr.Health
 	rd.BSkin = (arr.BSkin == 1)
 	rd.Character = arr.Character
 	rd.Crown = arr.Crown
 	rd.Mutations = parseMutations(arr.Mutations)
 	rd.Weapons = parseWeapons(arr.Weapon1, arr.Weapon2)
 	rd.Timestamp = arr.Timestamp
-	rd.Kills = ToInt(arr.Kills)
+	rd.Kills = arr.Kills
 	rd.Ultra = arr.Ultra
 	rd.LastDamagedBy = arr.LastDamagedBy
 

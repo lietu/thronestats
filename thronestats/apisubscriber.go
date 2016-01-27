@@ -12,6 +12,8 @@ import (
 	"github.com/nu7hatch/gouuid"
 )
 
+var CHECK_FREQUENCY time.Duration = 5 * time.Second
+
 type ApiSubscriber struct {
 	ClientUUID      uuid.UUID
 	SteamId64       string
@@ -169,52 +171,7 @@ func (as *ApiSubscriber) processUpdate(rd *RunData) {
 }
 
 func (as *ApiSubscriber) getData() ([]byte, error) {
-	url := fmt.Sprintf("https://tb-api.xyz/stream/get?s=%s&key=%s", as.SteamId64, as.StreamKey)
-
-	println(url)
-
-	return []byte(`{
-	"current": {
-		"char": 4,
-		"lasthit": 0,
-		"world": 1,
-		"level": 1,
-		"crown": 1,
-		"wepA": 7,
-		"wepB": 1,
-		"skin": 0,
-		"ultra": 0,
-		"charlvl": 1,
-		"loops": 0,
-		"win": 1,
-		"mutations": "00000000000000000000000000000",
-		"kills": "7",
-		"health": "2",
-		"steamid": 76561198041183122,
-		"type": "normal",
-		"timestamp": 1453851966
-	},
-	"previous": {
-		"char": 4,
-		"lasthit": 17,
-		"world": 3,
-		"level": 1,
-		"crown": 1,
-		"wepA": 6,
-		"wepB": 19,
-		"skin": 0,
-		"ultra": 0,
-		"charlvl": 4,
-		"loops": 0,
-		"win": 1,
-		"mutations": "00000100010000000000010000000",
-		"kills": "90",
-		"health": "0",
-		"steamid": 76561198041183122,
-		"type": "normal",
-		"timestamp": 1453851783
-	}
-}`), nil
+	url := fmt.Sprintf("https://tb-api.xyz/stream/get?s=%s&key=%s", as.SteamId64, strings.ToUpper(as.StreamKey))
 
 	resp, err := http.Get(url)
 
@@ -263,7 +220,6 @@ func (as *ApiSubscriber) poll() {
 }
 
 func (as *ApiSubscriber) run() {
-	checkFrequency := 5 * time.Second
 	start := time.Now()
 
 	as.poll()
@@ -277,7 +233,7 @@ func (as *ApiSubscriber) run() {
 		default:
 			elapsed := time.Since(start)
 
-			if elapsed > checkFrequency {
+			if elapsed > CHECK_FREQUENCY {
 				start = time.Now()
 				as.poll()
 			} else {

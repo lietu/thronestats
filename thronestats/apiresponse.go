@@ -12,10 +12,10 @@ type ApiResponseRun struct {
 	Ultra         int     `json:"ultra"`
 	CharacterLvl  int     `json:"charlvl"`
 	Loop          int     `json:"loops"`
-	Win           int     `json:"win"`
+	Win           bool    `json:"win"`
 	Mutations     string  `json:"mutations"`
-	Kills         string  `json:"kills"`
-	Health        string  `json:"health"`
+	Kills         int     `json:"kills"`
+	Health        int     `json:"health"`
 	SteamId       int     `json:"steamid"`
 	Type          string  `json:"type"`
 	Timestamp     int     `json:"timestamp"`

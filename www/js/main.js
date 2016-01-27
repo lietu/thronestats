@@ -922,7 +922,8 @@ $(function () {
          * @returns {boolean}
          */
         streamKeyOk: function (streamKey) {
-            return /^[a-zA-Z0-9]{6}$/.test(streamKey);
+            // ['B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y', 'Z', '2', '6', '8', '4']
+            return /^[a-zA-Z0-9]{9}$/.test(streamKey);
         },
 
         /**

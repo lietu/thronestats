@@ -309,10 +309,12 @@ TEMPDIR = "temp"
 
 
 class Entry(object):
-    def __init__(self, key, type, name=None, source=None, fixed=False):
+    def __init__(self, key=None, type=None, name=None, source=None,
+                 fixed=False, destination=None):
         self.type = type
         self.key = key
         self.source = source
+        self.destination = destination
         self.name = name
         self.fixed = fixed
 
@@ -322,6 +324,9 @@ class Entry(object):
     def get_destination(self):
         if not self.source:
             return ""
+
+        if self.destination:
+            return self.destination
 
         if self.type == "characters":
             filename = "sprMutant{}Idle.gif".format(self.name)

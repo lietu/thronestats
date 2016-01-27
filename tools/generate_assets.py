@@ -2,6 +2,7 @@
 Generate the graphics assets for ../www/img/ -folders.
 """
 
+from argparse import ArgumentParser
 import re
 import os
 import sys
@@ -277,7 +278,7 @@ DATA = {
         117: "Bouncer Shotgun",
         118: "Hyper Slugger",
         119: "Super Bazooka",
-        120: "Frog Pistol",
+        120: "Frog Blaster",
         121: "Black Sword",
         122: "Gold Nuke Launcher",
         123: "Gold Disc Gun",
@@ -383,8 +384,11 @@ class Entry(object):
 
         return width, height, frames
 
-    def make_gif(self, loop=0):
+    def make_gif(self, only_missing=False, loop=0):
         dst = self.get_destination()
+
+        if only_missing and os.path.isfile(dst):
+            return
 
         width, height, frames = self.get_dimensions()
 
@@ -539,7 +543,7 @@ def find_resources(src):
     return files
 
 
-def generate_resources(sources):
+def generate_resources(sources, only_missing):
     for type in sources:
         for key in sources[type]:
             entry = sources[type][key]
@@ -547,9 +551,9 @@ def generate_resources(sources):
                 continue
 
             if type == "weaponChoices":
-                entry.make_gif(loop=1)
+                entry.make_gif(only_missing, loop=1)
             else:
-                entry.make_gif()
+                entry.make_gif(only_missing)
 
 
 def generate_tests(src):
@@ -578,14 +582,17 @@ def generate_tests(src):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        usage()
-        sys.exit(1)
+    ap = ArgumentParser()
+    ap.set_defaults(only_missing=False)
+    ap.add_argument("source")
+    ap.add_argument("--only_missing", action="store_true")
+
+    args = ap.parse_args()
 
     setup_folders()
-    resources = find_resources(sys.argv[1])
+    resources = find_resources(args.source)
 
-    generate_resources(resources)
+    generate_resources(resources, args.only_missing)
 
     generate_tests(resources)
 

@@ -186,7 +186,7 @@ var Weapons = map[int]string{
 	61: "Sawed-off Shotgun",
 	62: "Splinter Pistol",
 	63: "Super Splinter Gun",
-	64: "Lighting SMG",
+	64: "Lightning SMG",
 	65: "Smart Gun",
 	66: "Heavy Crossbow",
 	67: "Blood Hammer",

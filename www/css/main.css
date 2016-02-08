@@ -80,3 +80,7 @@ section {
     margin-top: 24px; }
   #content .form:last-of-type {
     margin-bottom: 50px; }
+
+.header-image img {
+  display: block;
+  margin: -64px auto 0 auto; }

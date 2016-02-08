@@ -135,14 +135,14 @@ func (as *ApiSubscriber) processUpdate(rdc *RunDataContainer) {
 	previous := rdc.Previous
 
 	// Has the player died?
-	if (previous.Timestamp == as.runData.Timestamp) {
+	if previous.Timestamp > 0 && previous.Timestamp == as.runData.Timestamp {
 		as.onDeath(previous)
 		as.runData.Timestamp = 0
 	}
 
 	// If we have a current run
-	if (rdc.Current.Timestamp > 0) {
-		if (as.statsContainer.Running == false) {
+	if rdc.Current.Timestamp > 0 {
+		if as.statsContainer.Running == false {
 			as.onNewRun(current)
 			as.statsContainer.Running = true
 		} else {
